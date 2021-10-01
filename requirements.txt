@@ -1,2 +1,2 @@
 rdflib >= 6.0.0
--e git+https://github.com/philbarker/AP#egg=AP
+-e git+https://github.com/philbarker/APClasses#egg=AP
