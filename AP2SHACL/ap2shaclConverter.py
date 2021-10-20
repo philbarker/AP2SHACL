@@ -282,13 +282,13 @@ class AP2SHACLConverter:
             else:
                 raise Exception("Incompatible node kind and constraint.")
             return (SH.hasValue, [constraint])
-        elif constraint_type == "pattern":
+        elif constraint_type.lower() == "pattern":
             constraint = Literal(valueConstraints[0])
             return (SH.pattern, [constraint])
-        elif constraint_type == "minLength":
+        elif constraint_type.lower() == "minlength":
             constraint = Literal(int((valueConstraints[0])))
             return (SH.minLength, [constraint])
-        elif constraint_type == "maxLength":
+        elif constraint_type.lower() == "maxlength":
             constraint = Literal(int((valueConstraints[0])))
             return (SH.maxLength, constraints)
         else:
