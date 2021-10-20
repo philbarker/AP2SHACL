@@ -246,7 +246,7 @@ class AP2SHACLConverter:
     def convert_severity(self, severity):
         """Return SHACL value for severity based on string."""
         if severity == "":
-            return Literal("Info")
+            return SH.Info
         elif severity.lower() == "info":
             return SH.Info
         elif severity.lower() == "warning":
