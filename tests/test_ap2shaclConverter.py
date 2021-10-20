@@ -354,6 +354,10 @@ def test_ap2shaclInit(simple_ap):
     assert len(converter.ap.propertyStatements) == 7
     assert len(converter.ap.shapeInfo) == 2
     assert type(converter.sg) == Graph
+
+def test_convert_AP_SHACL(simple_ap):
+    converter = AP2SHACLConverter(simple_ap)
+    converter.convert_AP_SHACL()
     all_ns = [n for n in converter.sg.namespace_manager.namespaces()]
     assert ("schema", URIRef("https://schema.org/")) in all_ns
     assert ("sh", URIRef("http://www.w3.org/ns/shacl#")) in all_ns

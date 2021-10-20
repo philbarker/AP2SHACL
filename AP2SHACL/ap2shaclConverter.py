@@ -125,6 +125,8 @@ class AP2SHACLConverter:
     def __init__(self, ap):
         self.ap = ap
         self.sg = Graph()  # shacl graph
+
+    def convert_AP_SHACL(self):
         self.convert_namespaces()
         self.convert_shapes()
         self.convert_propertyStatements()
