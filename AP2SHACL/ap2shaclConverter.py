@@ -81,6 +81,7 @@ def convert_nodeKind(node_types):
     elif "Literal" in node_types:
         return SH.Literal
     else:
+        print("Warning: Node kind not matched.")
         return None
 
 
