@@ -64,21 +64,23 @@ def str2URIRef(namespaces, s):
         return URIRef(s)
 
 
-def convert_nodeKind(node_types):
+def convert_nodeKind(node_TYPES):
     """Return a shacl nodeKind IRI based on list of permitted node types."""
-    if ("IRI" in node_types) and ("BNode" in node_types) and ("Literal" in node_types):
+    # first convert all permitted node type strings in list to lower case
+    node_types = list((map(lambda x: x.lower(), node_TYPES)))
+    if ("iri" in node_types) and ("bnode" in node_types) and ("literal" in node_types):
         return None
-    if ("IRI" in node_types) and ("BNode" in node_types):
+    if ("iri" in node_types) and ("bnode" in node_types):
         return SH.BlankNodeOrIRI
-    elif ("IRI" in node_types) and ("Literal" in node_types):
+    elif ("iri" in node_types) and ("literal" in node_types):
         return SH.IRIOrLiteral
-    elif ("BNode" in node_types) and ("Literal" in node_types):
+    elif ("bnode" in node_types) and ("literal" in node_types):
         return SH.BlankNodeOrLiteral
-    elif "BNode" in node_types:
+    elif "bnode" in node_types:
         return SH.BlankNode
-    elif "IRI" in node_types:
+    elif "iri" in node_types:
         return SH.IRI
-    elif "Literal" in node_types:
+    elif "literal" in node_types:
         return SH.Literal
     else:
         print("Warning: Node kind not matched.")
