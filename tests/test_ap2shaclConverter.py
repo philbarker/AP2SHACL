@@ -363,5 +363,4 @@ def test_convert_AP_SHACL(simple_ap):
     assert ("sh", URIRef("http://www.w3.org/ns/shacl#")) in all_ns
     for t in expected_triples:
         assert t in converter.sg
-    converter.dump_shacl()
     assert False
