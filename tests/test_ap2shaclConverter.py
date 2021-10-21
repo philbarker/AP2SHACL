@@ -250,8 +250,8 @@ def person_shapeInfo():
     expected_triples.extend(
         [
             (URIRef("#Person"), RDF.type, SH.NodeShape),
-            (URIRef("#Person"), SH.name, Literal("Person shape")),
-            (URIRef("#Person"), SH.description, Literal("A shape for tests")),
+            (URIRef("#Person"), SH.name, Literal("Person shape", lang="en")),
+            (URIRef("#Person"), SH.description, Literal("A shape for tests", lang="en")),
             (URIRef("#Person"), SH.targetClass, schema.Person),
         ]
     )
@@ -272,8 +272,8 @@ def address_shapeInfo():
     expected_triples.extend(
         [
             (URIRef("#Address"), RDF.type, SH.NodeShape),
-            (URIRef("#Address"), SH.name, Literal("Address shape")),
-            (URIRef("#Address"), SH.description, Literal("A shape for tests")),
+            (URIRef("#Address"), SH.name, Literal("Address shape", lang="en")),
+            (URIRef("#Address"), SH.description, Literal("A shape for tests", lang="en")),
             (URIRef("#Address"), SH.targetObjectsOf, SDO.address),
         ]
     )

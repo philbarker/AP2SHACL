@@ -10,6 +10,8 @@ SH_in = URIRef("http://www.w3.org/ns/shacl#in")
 SH_or = URIRef("http://www.w3.org/ns/shacl#or")
 SH_class = URIRef("http://www.w3.org/ns/shacl#class")
 
+# default fallbacks for values that may be in AP metadata
+default_language = "en"
 
 def make_property_shape_id(ps):
     """Return a URI id based on a property statement label & shape."""
@@ -144,15 +146,19 @@ class AP2SHACLConverter:
     def convert_shapes(self):
         """Add the shapes from the application profile to the SHACL graph."""
         shapeInfo = self.ap.shapeInfo
+        try:
+            lang = self.ap.metadata["language"]
+        except  (KeyError, ValueError):
+            lang = default_language
         sh = "http://www.w3.org/ns/shacl#"
         for shape in shapeInfo.keys():
             shape_uri = URIRef(shape)
             self.sg.add((shape_uri, RDF.type, SH.NodeShape))
             if shapeInfo[shape]["label"]:
-                label = Literal(shapeInfo[shape]["label"])
+                label = Literal(shapeInfo[shape]["label"], lang=lang)
                 self.sg.add((shape_uri, SH.name, label))
             if shapeInfo[shape]["comment"]:
-                comment = Literal(shapeInfo[shape]["comment"])
+                comment = Literal(shapeInfo[shape]["comment"], lang=lang)
                 self.sg.add((shape_uri, SH.description, comment))
             if shapeInfo[shape]["target"] and shapeInfo[shape]["targetType"]:
                 target = str2URIRef(self.ap.namespaces, shapeInfo[shape]["target"])
