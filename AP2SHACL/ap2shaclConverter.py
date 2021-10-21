@@ -12,6 +12,7 @@ SH_class = URIRef("http://www.w3.org/ns/shacl#class")
 
 # default fallbacks for values that may be in AP metadata
 default_language = "en"
+default_base = "http://example.org/shapes"
 
 def make_property_shape_id(ps):
     """Return a URI id based on a property statement label & shape."""
@@ -128,8 +129,9 @@ def list2RDFList(g, list, node_type, namespaces):
 
 class AP2SHACLConverter:
     def __init__(self, ap):
+        base = default_base
         self.ap = ap
-        self.sg = Graph()  # shacl graph
+        self.sg = Graph(base=base)  # shacl graph
 
     def convert_AP_SHACL(self):
         self.convert_namespaces()
