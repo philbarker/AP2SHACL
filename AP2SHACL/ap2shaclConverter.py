@@ -12,7 +12,7 @@ SH_class = URIRef("http://www.w3.org/ns/shacl#class")
 
 # default fallbacks for values that may be in AP metadata
 default_language = "en"
-default_base = "http://example.org/shapes"
+default_base = "http://example.org/"
 
 def make_property_shape_id(ps):
     """Return a URI id based on a property statement label & shape."""
@@ -49,8 +49,7 @@ def str2URIRef(namespaces, s):
     if type(s) is str:
         pass
     else:
-        msg = "value to convert should be a string."
-        print(type(s))
+        msg = "value to convert should be a string not " + type(s)
         raise Exception(msg)
     if ":" in s:
         [pre, name] = s.split(":", 1)
@@ -86,7 +85,8 @@ def convert_nodeKind(node_TYPES):
     elif "literal" in node_types:
         return SH.Literal
     else:
-        print("Warning: Node kind not matched.")
+        msg = "Node type " + node_type + " unknown."
+        raise Exception(msg)
         return None
 
 
@@ -108,7 +108,6 @@ def list2RDFList(g, list, node_type, namespaces):
     else:
         start_node_id = None
     start_node = BNode(start_node_id)
-    print(start_node)
     current_node = start_node
     for item in list:
         if node_type == "Literal":

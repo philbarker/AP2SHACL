@@ -5,6 +5,7 @@ from rdflib import Graph, URIRef, Literal, BNode, Namespace, RDF, RDFS, SH
 schema = Namespace("https://schema.org/")
 SDO = Namespace("https://schema.org/")  # "httpS"
 XSD = Namespace("http://www.w3.org/2001/XMLSchema#")
+BASE = Namespace("http://example.org/shapes#")
 # avoid stoopid conflicts python keywords
 SH_in = URIRef("http://www.w3.org/ns/shacl#in")
 SH_or = URIRef("http://www.w3.org/ns/shacl#or")
@@ -15,7 +16,7 @@ expected_triples = []
 @pytest.fixture(scope="module")
 def name_ps():
     ps = PropertyStatement()
-    ps.add_shape("#Person")
+    ps.add_shape("Person")
     ps.add_property("schema:name")
     ps.add_label("en", "Name")
     ps.add_label("es", "Nombre")
@@ -28,7 +29,7 @@ def name_ps():
     ps.add_severity("Violation")
     expected_triples.extend(
         [
-            (URIRef("#Person"), SH.property, URIRef("#personName_value")),
+            (BASE.Person, SH.property, URIRef("#personName_value")),
             (URIRef("#personName_value"), RDF.type, SH.PropertyShape),
             (URIRef("#personName_value"), SH.path, SDO.name),
             (URIRef("#personName_value"), SH.name, Literal("Name", lang="en")),
@@ -360,6 +361,7 @@ def test_convert_AP_SHACL(simple_ap):
     all_ns = [n for n in converter.sg.namespace_manager.namespaces()]
     assert ("schema", URIRef("https://schema.org/")) in all_ns
     assert ("sh", URIRef("http://www.w3.org/ns/shacl#")) in all_ns
-    assert ("base", URIRef("http://example.org/")) in all_ns
+    assert ("base", URIRef("http://example.org/shapes")) in all_ns
+    converter.dump_shacl()
     for t in expected_triples:
         assert t in converter.sg
