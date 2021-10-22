@@ -1,6 +1,5 @@
 import pytest
-from AP import AP, PropertyStatement
-from AP2SHACL import AP2SHACLConverter, make_property_shape_id, list2RDFList
+from AP2SHACL import AP2SHACLConverter, make_property_shape_id, list2RDFList, AP, PropertyStatement
 from rdflib import Graph, URIRef, Literal, BNode, Namespace, RDF, RDFS, SH
 
 schema = Namespace("https://schema.org/")
