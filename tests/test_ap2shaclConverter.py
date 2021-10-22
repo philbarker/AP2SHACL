@@ -361,5 +361,6 @@ def test_convert_AP_SHACL(simple_ap):
     all_ns = [n for n in converter.sg.namespace_manager.namespaces()]
     assert ("schema", URIRef("https://schema.org/")) in all_ns
     assert ("sh", URIRef("http://www.w3.org/ns/shacl#")) in all_ns
+    assert ("base", URIRef("http://example.org/")) in all_ns
     for t in expected_triples:
         assert t in converter.sg
