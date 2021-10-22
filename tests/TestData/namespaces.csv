@@ -9,4 +9,4 @@ foaf,http://xmlns.com/foaf/0.1/,Friend of a Friend
 owl,http://www.w3.org/2002/07/owl#,Ontology Web Language
 schema,https://schema.org/,Schema.org
 skos,http://www.w3.org/2004/02/skos/core#,Simple Knowledge Organization System
-base,http://example.org/shapes,base for unqualified URIs
+base,http://example.org/shapes#,base for unqualified URIs

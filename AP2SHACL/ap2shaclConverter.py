@@ -14,7 +14,7 @@ SH_class = URIRef("http://www.w3.org/ns/shacl#class")
 default_language = "en"
 default_base = "http://example.org/"
 
-def make_property_shape_id(ps):
+def make_property_shape_name(ps):
     """Return a URI id based on a property statement label & shape."""
     # TODO: allow user to set preferences for which labels to use.
     if ps.shapes == []:
@@ -24,8 +24,8 @@ def make_property_shape_id(ps):
         # need to avoid unnecessary #s
         sh = quote(ps.shapes[0].replace("#", "").replace(" ", "").lower())
     if ps.labels == {}:
-        id = URIRef("#" + sh + str(uuid4()).lower())
-        return id
+        name = "#" + sh + str(uuid4()).lower()
+        return name
     else:
         languages = ps.labels.keys()
         if "en" in languages:
@@ -35,8 +35,8 @@ def make_property_shape_id(ps):
         else:  # just pull the first one that's found
             label = list(ps.labels.values())[0]
         label = label[0].upper() + label[1:]  # lowerCamelCase
-        id = URIRef("#" + sh + quote(label.replace(" ", "")))
-        return id
+        name ="#" + sh + quote(label.replace(" ", ""))
+        return name
 
 
 def str2URIRef(namespaces, s):
@@ -45,12 +45,16 @@ def str2URIRef(namespaces, s):
         pass
     else:
         msg = "Namespaces should be a dictionary."
-        raise Exception(msg)
+        raise TypeError(msg)
     if type(s) is str:
         pass
     else:
         msg = "value to convert should be a string not " + type(s)
-        raise Exception(msg)
+        raise TypeError(msg)
+    if "base" in namespaces.keys():
+        base = namespaces["base"]
+    else:
+        base = default_base
     if ":" in s:
         [pre, name] = s.split(":", 1)
         if pre == ("http" or "https"):
@@ -59,11 +63,13 @@ def str2URIRef(namespaces, s):
             return URIRef(namespaces[pre] + name)
         else:
             # TODO logging/exception warning that prefix not known
-            print("Warning: prefix ", pre, " not in namespace list.")
-            return URIRef(s)
+            msg = "Prefix "+pre+" not in namespace list."
+            raise ValueError(msg)
     else:
-        # there's no prefix, just a string to convert to URI
-        return URIRef(s)
+        # there's no prefix, convert to URI using base & URI safe str
+        if (s[0] == "#") and (base[-1] == "#"):
+            s = s[1:]
+        return URIRef(base + quote(s))
 
 
 def convert_nodeKind(node_TYPES):
@@ -96,13 +102,13 @@ def list2RDFList(g, list, node_type, namespaces):
     # URIRef - already a rfdlib.URIRef ; anyURI text to convert to URIRef
     if not (node_type in ["Literal", "anyURI", "URIRef"]):
         msg = "Node type " + node_type + " unknown."
-        raise Exception(msg)
+        raise ValueException(msg)
     # useful to id list start node for testing
     if type(list[0]) is str or (type(list[0]) is URIRef):
-        start_node_id = list[0].replace(":", "-")
-        start_node_id = start_node_id.replace(" ", "-")
-        start_node_id = start_node_id.replace("#", "")
-        start_node_id = start_node_id.replace("_", "-")
+        if g.base and g.base in list[0]:
+            start_node_id = quote(list[0].replace(g.base,""))
+        else:
+            start_node_id = quote(list[0].replace(":","_"))
     elif (type(list[0]) is int) or (type(list[0]) is float):
         start_node_id = list[0]
     else:
@@ -143,6 +149,8 @@ class AP2SHACLConverter:
             ns_uri = URIRef(self.ap.namespaces[prefix])
             ns = Namespace(ns_uri)
             self.sg.bind(prefix, ns)
+            if "base" == prefix.lower():
+                self.sg.base = ns_uri
 
     def convert_shapes(self):
         """Add the shapes from the application profile to the SHACL graph."""
@@ -153,7 +161,7 @@ class AP2SHACLConverter:
             lang = default_language
         sh = "http://www.w3.org/ns/shacl#"
         for shape in shapeInfo.keys():
-            shape_uri = URIRef(shape)
+            shape_uri = str2URIRef(self.ap.namespaces, shape)
             self.sg.add((shape_uri, RDF.type, SH.NodeShape))
             if shapeInfo[shape]["label"]:
                 label = Literal(shapeInfo[shape]["label"], lang=lang)
@@ -182,10 +190,11 @@ class AP2SHACLConverter:
                 ps_ids = []
                 severity = self.convert_severity(ps.severity)
                 for p in ps.properties:
-                    prop = quote(p.replace("#", "").replace(":", "-"))
-                    ps_id = make_property_shape_id(ps) + "-" + prop + "-opt"
+                    prop = quote(p.replace("#", "").replace(":", "_"))
+                    ps_name = make_property_shape_name(ps) + "_" + prop + "_opt"
+                    ps_id = str2URIRef(self.ap.namespaces, ps_name)
                     ps_ids.append(ps_id)
-                    ps_opt_uri = URIRef(ps_id)
+                    ps_opt_uri = str2URIRef(self.ap.namespaces, ps_name)
                     path = str2URIRef(self.ap.namespaces, p)
                     self.sg.add((ps_opt_uri, RDF.type, SH.PropertyShape))
                     self.sg.add((ps_opt_uri, SH.path, path))
@@ -205,11 +214,11 @@ class AP2SHACLConverter:
                         self.sg.add((shape_uri, SH_class, type_uri))
                 continue
             else:
-                ps_id = make_property_shape_id(ps)
+                ps_name = make_property_shape_name(ps)
                 severity = self.convert_severity(ps.severity)
-                ps_kind_uri = URIRef(ps_id + "_value")
+                ps_kind_uri = str2URIRef(self.ap.namespaces, ps_name + "_value")
                 for sh in ps.shapes:
-                    self.sg.add((URIRef(sh), SH.property, ps_kind_uri))
+                    self.sg.add((str2URIRef(self.ap.namespaces, sh), SH.property, ps_kind_uri))
                 self.sg.add((ps_kind_uri, RDF.type, SH.PropertyShape))
                 for lang in ps.labels:
                     name = Literal(ps.labels[lang], lang=lang)
@@ -233,11 +242,11 @@ class AP2SHACLConverter:
                     pass
                 if ps.valueShapes != []:
                     for shape in ps.valueShapes:
-                        self.sg.add((ps_kind_uri, SH.node, URIRef(shape)))
+                        self.sg.add((ps_kind_uri, SH.node, str2URIRef(self.ap.namespaces, shape)))
                 if ps.mandatory or not ps.repeatable:
                     # Need separate property shape check that property is used correct number of times.
                     # Has to separated from other checks as failing ones of those might lead to wrong result on uniqueness.
-                    ps_count_uri = URIRef(ps_id + "_count")
+                    ps_count_uri = str2URIRef(self.ap.namespaces, ps_name + "_count")
                     self.sg.add((ps_count_uri, RDF.type, SH.PropertyShape))
                     for property in ps.properties:
                         path = str2URIRef(self.ap.namespaces, property)
@@ -247,7 +256,7 @@ class AP2SHACLConverter:
                     if not ps.repeatable:
                         self.sg.add((ps_count_uri, SH.maxCount, Literal(1)))
                     for sh in ps.shapes:
-                        self.sg.add((URIRef(sh), SH.property, ps_count_uri))
+                        self.sg.add((str2URIRef(self.ap.namespaces, sh), SH.property, ps_count_uri))
                     self.sg.add(((ps_count_uri, SH.severity, severity)))
 
     def convert_severity(self, severity):
