@@ -240,6 +240,9 @@ class AP2SHACLConverter:
                         self.sg.add((ps_uri, sh_constrnt_type, c))
                 else:  # no value constraints to add
                     pass
+                if ps.valueShapes != []:
+                    for shape in ps.valueShapes:
+                        self.sg.add((ps_uri, SH.node, str2URIRef(self.ap.namespaces, shape)))
                 if ps.mandatory:
                     self.sg.add((ps_uri, SH.minCount, Literal(1)))
                 if not ps.repeatable:
