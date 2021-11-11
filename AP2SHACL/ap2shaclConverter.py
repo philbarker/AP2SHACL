@@ -240,24 +240,10 @@ class AP2SHACLConverter:
                         self.sg.add((ps_kind_uri, sh_constrnt_type, c))
                 else:  # no value constraints to add
                     pass
-                if ps.valueShapes != []:
-                    for shape in ps.valueShapes:
-                        self.sg.add((ps_kind_uri, SH.node, str2URIRef(self.ap.namespaces, shape)))
-                if ps.mandatory or not ps.repeatable:
-                    # Need separate property shape check that property is used correct number of times.
-                    # Has to separated from other checks as failing ones of those might lead to wrong result on uniqueness.
-                    ps_count_uri = str2URIRef(self.ap.namespaces, ps_name + "_count")
-                    self.sg.add((ps_count_uri, RDF.type, SH.PropertyShape))
-                    for property in ps.properties:
-                        path = str2URIRef(self.ap.namespaces, property)
-                        self.sg.add((ps_count_uri, SH.path, path))
-                    if ps.mandatory:
-                        self.sg.add((ps_count_uri, SH.minCount, Literal(1)))
-                    if not ps.repeatable:
-                        self.sg.add((ps_count_uri, SH.maxCount, Literal(1)))
-                    for sh in ps.shapes:
-                        self.sg.add((str2URIRef(self.ap.namespaces, sh), SH.property, ps_count_uri))
-                    self.sg.add(((ps_count_uri, SH.severity, severity)))
+                if ps.mandatory:
+                    self.sg.add((ps_kind_uri, SH.minCount, Literal(1)))
+                if not ps.repeatable:
+                    self.sg.add((ps_kind_uri, SH.maxCount, Literal(1)))
 
     def convert_severity(self, severity):
         """Return SHACL value for severity based on string."""
