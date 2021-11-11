@@ -1,5 +1,11 @@
 import pytest
-from AP2SHACL import AP2SHACLConverter, make_property_shape_name, list2RDFList, AP, PropertyStatement
+from AP2SHACL import (
+    AP2SHACLConverter,
+    make_property_shape_name,
+    list2RDFList,
+    AP,
+    PropertyStatement,
+)
 from rdflib import Graph, URIRef, Literal, BNode, Namespace, RDF, RDFS, SH
 
 schema = Namespace("https://schema.org/")
@@ -346,6 +352,7 @@ def test_ap2shaclInit(simple_ap):
     assert len(converter.ap.propertyStatements) == 7
     assert len(converter.ap.shapeInfo) == 2
     assert type(converter.sg) == Graph
+
 
 def test_convert_AP_SHACL(simple_ap):
     converter = AP2SHACLConverter(simple_ap)

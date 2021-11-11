@@ -14,6 +14,7 @@ SH_class = URIRef("http://www.w3.org/ns/shacl#class")
 default_language = "en"
 default_base = "http://example.org/"
 
+
 def make_property_shape_name(ps):
     """Return a URI id based on a property statement label & shape."""
     # TODO: allow user to set preferences for which labels to use.
@@ -35,7 +36,7 @@ def make_property_shape_name(ps):
         else:  # just pull the first one that's found
             label = list(ps.labels.values())[0]
         label = label[0].upper() + label[1:]  # lowerCamelCase
-        name ="#" + sh + quote(label.replace(" ", ""))
+        name = "#" + sh + quote(label.replace(" ", ""))
         return name
 
 
@@ -63,7 +64,7 @@ def str2URIRef(namespaces, s):
             return URIRef(namespaces[pre] + name)
         else:
             # TODO logging/exception warning that prefix not known
-            msg = "Prefix "+pre+" not in namespace list."
+            msg = "Prefix " + pre + " not in namespace list."
             raise ValueError(msg)
     else:
         # there's no prefix, convert to URI using base & URI safe str
@@ -106,9 +107,9 @@ def list2RDFList(g, list, node_type, namespaces):
     # useful to id list start node for testing
     if type(list[0]) is str or (type(list[0]) is URIRef):
         if g.base and g.base in list[0]:
-            start_node_id = quote(list[0].replace(g.base,""))
+            start_node_id = quote(list[0].replace(g.base, ""))
         else:
-            start_node_id = quote(list[0].replace(":","_"))
+            start_node_id = quote(list[0].replace(":", "_"))
     elif (type(list[0]) is int) or (type(list[0]) is float):
         start_node_id = list[0]
     else:
@@ -157,7 +158,7 @@ class AP2SHACLConverter:
         shapeInfo = self.ap.shapeInfo
         try:
             lang = self.ap.metadata["language"]
-        except  (KeyError, ValueError):
+        except (KeyError, ValueError):
             lang = default_language
         sh = "http://www.w3.org/ns/shacl#"
         for shape in shapeInfo.keys():
@@ -218,7 +219,9 @@ class AP2SHACLConverter:
                 severity = self.convert_severity(ps.severity)
                 ps_uri = str2URIRef(self.ap.namespaces, ps_name)
                 for sh in ps.shapes:
-                    self.sg.add((str2URIRef(self.ap.namespaces, sh), SH.property, ps_uri))
+                    self.sg.add(
+                        (str2URIRef(self.ap.namespaces, sh), SH.property, ps_uri)
+                    )
                 self.sg.add((ps_uri, RDF.type, SH.PropertyShape))
                 for lang in ps.labels:
                     name = Literal(ps.labels[lang], lang=lang)
@@ -242,7 +245,9 @@ class AP2SHACLConverter:
                     pass
                 if ps.valueShapes != []:
                     for shape in ps.valueShapes:
-                        self.sg.add((ps_uri, SH.node, str2URIRef(self.ap.namespaces, shape)))
+                        self.sg.add(
+                            (ps_uri, SH.node, str2URIRef(self.ap.namespaces, shape))
+                        )
                 if ps.mandatory:
                     self.sg.add((ps_uri, SH.minCount, Literal(1)))
                 if not ps.repeatable:
@@ -300,9 +305,9 @@ class AP2SHACLConverter:
             msg = "unknown type of value constraint: " + constraint_type
             raise Exception(msg)
 
-    def dump_shacl(self, fname = None):
+    def dump_shacl(self, fname=None):
         """Print the SHACL Graph in Turtle."""
-        if fname :
+        if fname:
             try:
                 f = open(fname, "w")
             except Exception as e:
