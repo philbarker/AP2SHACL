@@ -216,34 +216,34 @@ class AP2SHACLConverter:
             else:
                 ps_name = make_property_shape_name(ps)
                 severity = self.convert_severity(ps.severity)
-                ps_kind_uri = str2URIRef(self.ap.namespaces, ps_name)
+                ps_uri = str2URIRef(self.ap.namespaces, ps_name)
                 for sh in ps.shapes:
-                    self.sg.add((str2URIRef(self.ap.namespaces, sh), SH.property, ps_kind_uri))
-                self.sg.add((ps_kind_uri, RDF.type, SH.PropertyShape))
+                    self.sg.add((str2URIRef(self.ap.namespaces, sh), SH.property, ps_uri))
+                self.sg.add((ps_uri, RDF.type, SH.PropertyShape))
                 for lang in ps.labels:
                     name = Literal(ps.labels[lang], lang=lang)
-                    self.sg.add((ps_kind_uri, SH.name, name))
+                    self.sg.add((ps_uri, SH.name, name))
                 for property in ps.properties:
                     path = str2URIRef(self.ap.namespaces, property)
-                    self.sg.add((ps_kind_uri, SH.path, path))
-                self.sg.add(((ps_kind_uri, SH.severity, severity)))
+                    self.sg.add((ps_uri, SH.path, path))
+                self.sg.add(((ps_uri, SH.severity, severity)))
                 if ps.valueNodeTypes != []:
                     nodeKind = convert_nodeKind(ps.valueNodeTypes)
-                    self.sg.add((ps_kind_uri, SH.nodeKind, nodeKind))
+                    self.sg.add((ps_uri, SH.nodeKind, nodeKind))
                 if ps.valueDataTypes != []:
                     for valueDataType in ps.valueDataTypes:
                         datatypeURI = str2URIRef(self.ap.namespaces, valueDataType)
-                        self.sg.add((ps_kind_uri, SH.datatype, datatypeURI))
+                        self.sg.add((ps_uri, SH.datatype, datatypeURI))
                 if ps.valueConstraints != []:
                     sh_constrnt_type, constrnts = self.convert_valConstraints(ps)
                     for c in constrnts:
-                        self.sg.add((ps_kind_uri, sh_constrnt_type, c))
+                        self.sg.add((ps_uri, sh_constrnt_type, c))
                 else:  # no value constraints to add
                     pass
                 if ps.mandatory:
-                    self.sg.add((ps_kind_uri, SH.minCount, Literal(1)))
+                    self.sg.add((ps_uri, SH.minCount, Literal(1)))
                 if not ps.repeatable:
-                    self.sg.add((ps_kind_uri, SH.maxCount, Literal(1)))
+                    self.sg.add((ps_uri, SH.maxCount, Literal(1)))
 
     def convert_severity(self, severity):
         """Return SHACL value for severity based on string."""

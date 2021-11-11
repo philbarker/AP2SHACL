@@ -29,19 +29,15 @@ def name_ps():
     ps.add_severity("Violation")
     expected_triples.extend(
         [
-            (BASE.Person, SH.property, BASE.personName_value),
-            (BASE.personName_value, RDF.type, SH.PropertyShape),
-            (BASE.personName_value, SH.path, SDO.name),
-            (BASE.personName_value, SH.name, Literal("Name", lang="en")),
-            (BASE.personName_value, SH.name, Literal("Nombre", lang="es")),
-            (BASE.personName_value, SH.datatype, XSD.string),
-            (BASE.personName_value, SH.minLength, Literal(2)),
-            (BASE.Person, SH.property, BASE.personName_count),
-            (BASE.personName_count, RDF.type, SH.PropertyShape),
-            (BASE.personName_count, SH.path, SDO.name),
-            (BASE.personName_count, SH.minCount, Literal(1)),
-            (BASE.personName_count, SH.severity, SH.Violation),
-            (BASE.personName_value, SH.severity, SH.Violation),
+            (BASE.Person, SH.property, BASE.personName),
+            (BASE.personName, RDF.type, SH.PropertyShape),
+            (BASE.personName, SH.path, SDO.name),
+            (BASE.personName, SH.name, Literal("Name", lang="en")),
+            (BASE.personName, SH.name, Literal("Nombre", lang="es")),
+            (BASE.personName, SH.datatype, XSD.string),
+            (BASE.personName, SH.minLength, Literal(2)),
+            (BASE.personName, SH.minCount, Literal(1)),
+            (BASE.personName, SH.severity, SH.Violation),
         ]
     )
     return ps
@@ -60,17 +56,13 @@ def description_ps():
     ps.add_severity("Violation")
     expected_triples.extend(
         [
-            (BASE.Person, SH.property, BASE.personDescription_value),
-            (BASE.personDescription_value, RDF.type, SH.PropertyShape),
-            (BASE.personDescription_value, SH.path, SDO.description),
-            (BASE.personDescription_value, SH.datatype, XSD.string),
-            (BASE.personDescription_value, SH.maxLength, Literal(1024)),
-            (BASE.Person, SH.property, BASE.personDescription_count),
-            (BASE.personDescription_count, RDF.type, SH.PropertyShape),
-            (BASE.personDescription_count, SH.path, SDO.description),
-            (BASE.personDescription_count, SH.maxCount, Literal(1)),
-            (BASE.personDescription_count, SH.severity, SH.Violation),
-            (BASE.personDescription_value, SH.severity, SH.Violation),
+            (BASE.Person, SH.property, BASE.personDescription),
+            (BASE.personDescription, RDF.type, SH.PropertyShape),
+            (BASE.personDescription, SH.path, SDO.description),
+            (BASE.personDescription, SH.datatype, XSD.string),
+            (BASE.personDescription, SH.maxLength, Literal(1024)),
+            (BASE.personDescription, SH.maxCount, Literal(1)),
+            (BASE.personDescription, SH.severity, SH.Violation),
         ]
     )
     return ps
@@ -141,13 +133,13 @@ def email_ps():
     ps.add_severity("Warning")
     expected_triples.extend(
         [
-            (BASE.Person, SH.property, BASE.personEmail_value),
-            (BASE.personEmail_value, RDF.type, SH.PropertyShape),
-            (BASE.personEmail_value, SH.path, SDO.email),
-            (BASE.personEmail_value, SH.name, Literal("Email", lang="en")),
-            (BASE.personEmail_value, SH.nodeKind, SH.Literal),
-            (BASE.personEmail_value, SH.pattern, Literal("/.+@.+/")),
-            (BASE.personEmail_value, SH.severity, SH.Warning),
+            (BASE.Person, SH.property, BASE.personEmail),
+            (BASE.personEmail, RDF.type, SH.PropertyShape),
+            (BASE.personEmail, SH.path, SDO.email),
+            (BASE.personEmail, SH.name, Literal("Email", lang="en")),
+            (BASE.personEmail, SH.nodeKind, SH.Literal),
+            (BASE.personEmail, SH.pattern, Literal("/.+@.+/")),
+            (BASE.personEmail, SH.severity, SH.Warning),
         ]
     )
     return ps
@@ -167,13 +159,13 @@ def address_ps():
     ps.add_severity("Warning")
     expected_triples.extend(
         [
-            (BASE.Person, SH.property, BASE.personAddress_value),
-            (BASE.personAddress_value, RDF.type, SH.PropertyShape),
-            (BASE.personAddress_value, SH.path, SDO.address),
-            (BASE.personAddress_value, SH.name, Literal("Address", lang="en")),
-            (BASE.personAddress_value, SH.nodeKind, SH.BlankNodeOrIRI),
-            (BASE.personAddress_value, SH.node, BASE.Address),
-            (BASE.personAddress_value, SH.severity, SH.Warning),
+            (BASE.Person, SH.property, BASE.personAddress),
+            (BASE.personAddress, RDF.type, SH.PropertyShape),
+            (BASE.personAddress, SH.path, SDO.address),
+            (BASE.personAddress, SH.name, Literal("Address", lang="en")),
+            (BASE.personAddress, SH.nodeKind, SH.BlankNodeOrIRI),
+            (BASE.personAddress, SH.node, BASE.Address),
+            (BASE.personAddress, SH.severity, SH.Warning),
         ]
     )
     return ps
@@ -212,17 +204,17 @@ def address_option_ps():
     ps.add_severity("Violation")
     expected_triples.extend(
         [
-            (BASE.Address, SH.property, BASE.addressContactOption_value),
-            (BASE.addressContactOption_value, RDF.type, SH.PropertyShape),
-            (BASE.addressContactOption_value, SH.path, SDO.contactOption),
+            (BASE.Address, SH.property, BASE.addressContactOption),
+            (BASE.addressContactOption, RDF.type, SH.PropertyShape),
+            (BASE.addressContactOption, SH.path, SDO.contactOption),
             (
-                BASE.addressContactOption_value,
+                BASE.addressContactOption,
                 SH.name,
                 Literal("Contact Option", lang="en"),
             ),
-            (BASE.addressContactOption_value, SH.nodeKind, SH.IRI),
+            (BASE.addressContactOption, SH.nodeKind, SH.IRI),
             (
-                BASE.addressContactOption_value,
+                BASE.addressContactOption,
                 SH_in,
                 BNode("schema_HearingImpairedSupported"),
             ),
