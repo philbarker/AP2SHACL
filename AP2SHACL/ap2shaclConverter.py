@@ -216,7 +216,7 @@ class AP2SHACLConverter:
             else:
                 ps_name = make_property_shape_name(ps)
                 severity = self.convert_severity(ps.severity)
-                ps_kind_uri = str2URIRef(self.ap.namespaces, ps_name + "_value")
+                ps_kind_uri = str2URIRef(self.ap.namespaces, ps_name)
                 for sh in ps.shapes:
                     self.sg.add((str2URIRef(self.ap.namespaces, sh), SH.property, ps_kind_uri))
                 self.sg.add((ps_kind_uri, RDF.type, SH.PropertyShape))
