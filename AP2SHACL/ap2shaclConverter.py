@@ -203,7 +203,8 @@ class AP2SHACLConverter:
                         self.sg.add((ps_opt_uri, SH.minCount, Literal(1)))
                     if not ps.repeatable:
                         self.sg.add((ps_opt_uri, SH.maxCount, Literal(1)))
-                    self.sg.add(((ps_opt_uri, SH.severity, severity)))
+                    if severity:
+                        self.sg.add(((ps_opt_uri, SH.severity, severity)))
                 or_list = list2RDFList(self.sg, ps_ids, "URIRef", self.ap.namespaces)
                 self.sg.add((shape_uri, SH_or, or_list))
             elif ps.properties == ["rdf:type"]:
@@ -229,7 +230,8 @@ class AP2SHACLConverter:
                 for property in ps.properties:
                     path = str2URIRef(self.ap.namespaces, property)
                     self.sg.add((ps_uri, SH.path, path))
-                self.sg.add(((ps_uri, SH.severity, severity)))
+                if severity:
+                    self.sg.add(((ps_uri, SH.severity, severity)))
                 if ps.valueNodeTypes != []:
                     nodeKind = convert_nodeKind(ps.valueNodeTypes)
                     self.sg.add((ps_uri, SH.nodeKind, nodeKind))
@@ -256,7 +258,7 @@ class AP2SHACLConverter:
     def convert_severity(self, severity):
         """Return SHACL value for severity based on string."""
         if severity == "":
-            return SH.Info
+            return ""
         elif severity.lower() == "info":
             return SH.Info
         elif severity.lower() == "warning":
