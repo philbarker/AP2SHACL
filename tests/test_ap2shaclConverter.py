@@ -243,6 +243,7 @@ def person_shapeInfo():
         "targetType": "class",
         "mandatory": True,
         "severity": "Warning",
+        "closed": True,
         "properties": ["name", "contact", "description"],
     }
     expected_triples.extend(
@@ -251,6 +252,7 @@ def person_shapeInfo():
             (BASE.Person, SH.name, Literal("Person shape", lang="en")),
             (BASE.Person, SH.description, Literal("A shape for tests", lang="en")),
             (BASE.Person, SH.targetClass, schema.Person),
+            (BASE.Person, SH.closed, Literal("True", datatype = XSD.boolean)),
         ]
     )
     return shapeInfo

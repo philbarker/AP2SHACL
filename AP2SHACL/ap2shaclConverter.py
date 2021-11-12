@@ -164,13 +164,19 @@ class AP2SHACLConverter:
         for shape in shapeInfo.keys():
             shape_uri = str2URIRef(self.ap.namespaces, shape)
             self.sg.add((shape_uri, RDF.type, SH.NodeShape))
-            if shapeInfo[shape]["label"]:
+            keys = shapeInfo[shape].keys()
+            if ("label" in keys) and shapeInfo[shape]["label"]:
                 label = Literal(shapeInfo[shape]["label"], lang=lang)
                 self.sg.add((shape_uri, SH.name, label))
-            if shapeInfo[shape]["comment"]:
+            if ("comment" in keys) and shapeInfo[shape]["comment"]:
                 comment = Literal(shapeInfo[shape]["comment"], lang=lang)
                 self.sg.add((shape_uri, SH.description, comment))
-            if shapeInfo[shape]["target"] and shapeInfo[shape]["targetType"]:
+            if (
+                ("target" in keys)
+                and shapeInfo[shape]["target"]
+                and ("targetType" in keys)
+                and shapeInfo[shape]["targetType"]
+            ):
                 target = str2URIRef(self.ap.namespaces, shapeInfo[shape]["target"])
                 if shapeInfo[shape]["targetType"].lower() == "class":
                     targetType = SH.targetClass
@@ -181,6 +187,10 @@ class AP2SHACLConverter:
                 elif shapeInfo[shape]["targetType"].lower() == "objectsof":
                     targetType = SH.targetObjectsOf
                 self.sg.add((shape_uri, targetType, target))
+            if ("closed" in keys) and shapeInfo[shape]["closed"] == True:
+                self.sg.add((shape_uri, SH.closed, Literal("True", datatype = XSD.boolean)))
+            elif ("closed" in keys) and shapeInfo[shape]["closed"] == False:
+                self.sg.add((shape_uri, SH.closed, Literal("False", datatype = XSD.boolean)))
 
     def convert_propertyStatements(self):
         """Add the property statements from the application profile to the SHACL graph as property shapes."""
