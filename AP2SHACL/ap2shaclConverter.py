@@ -248,7 +248,8 @@ class AP2SHACLConverter:
                     self.sg.add(((ps_uri, SH.severity, severity)))
                 if ps.valueNodeTypes != []:
                     nodeKind = convert_nodeKind(ps.valueNodeTypes)
-                    self.sg.add((ps_uri, SH.nodeKind, nodeKind))
+                    if nodeKind is not None:
+                        self.sg.add((ps_uri, SH.nodeKind, nodeKind))
                 if ps.valueDataTypes != []:
                     for valueDataType in ps.valueDataTypes:
                         datatypeURI = str2URIRef(self.ap.namespaces, valueDataType)
