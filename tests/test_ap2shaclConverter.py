@@ -26,7 +26,7 @@ def name_ps():
     ps.add_property("schema:name")
     ps.add_label("en", "Name")
     ps.add_label("es", "Nombre")
-    ps.add_valueNodeType("Literal")
+    ps.add_valueNodeType("literal")
     ps.add_valueDataType("xsd:string")
     ps.add_valueConstraintType("minLength")
     ps.add_valueConstraint("2")
@@ -53,7 +53,7 @@ def description_ps():
     ps = PropertyStatement()
     ps.add_shape("#Person")
     ps.add_property("schema:description")
-    ps.add_valueNodeType("Literal")
+    ps.add_valueNodeType("literal")
     ps.add_valueDataType("xsd:string")
     ps.add_valueConstraintType("maxLength")
     ps.add_valueConstraint("1024")
@@ -82,7 +82,7 @@ def person_type_ps():
     ps.add_label("en", "Type")
     ps.add_mandatory(True)
     ps.add_repeatable(False)
-    ps.add_valueNodeType("IRI")
+    ps.add_valueNodeType("iri")
     ps.add_valueConstraint("schema:Person")
     ps.add_severity("Violation")
     expected_triples.extend(
@@ -132,7 +132,7 @@ def email_ps():
     ps.add_label("en", "Email")
     ps.add_mandatory(False)
     ps.add_repeatable(True)
-    ps.add_valueNodeType("Literal")
+    ps.add_valueNodeType("literal")
     ps.add_valueDataType("xsd:string")
     ps.add_valueConstraint("/.+@.+/")
     ps.add_valueConstraintType("pattern")
@@ -157,7 +157,7 @@ def email_length_ps():
     ps.add_shape("#Person")
     ps.add_property("schema:email")
     ps.add_label("en", "Email Length")
-    ps.add_valueNodeType("Literal")
+    ps.add_valueNodeType("literal")
     ps.add_valueDataType("xsd:string")
     ps.add_valueConstraint("6..1024")
     ps.add_valueConstraintType("lengthrange")
@@ -185,7 +185,7 @@ def address_ps():
     ps.add_label("en", "Address")
     ps.add_mandatory(False)
     ps.add_repeatable(True)
-    ps.add_valueNodeType("IRI")
+    ps.add_valueNodeType("iri")
     ps.add_valueNodeType("BNode")
     ps.add_valueShape("#Address")
     ps.add_severity("Warning")
@@ -211,7 +211,7 @@ def address_type_ps():
     ps.add_label("en", "Type")
     ps.add_mandatory(True)
     ps.add_repeatable(False)
-    ps.add_valueNodeType("IRI")
+    ps.add_valueNodeType("iri")
     ps.add_valueConstraint("schema:PostalAddress")
     ps.add_severity("Violation")
     expected_triples.extend(
@@ -230,7 +230,7 @@ def address_option_ps():
     ps.add_label("en", "Contact Option")
     ps.add_mandatory(False)
     ps.add_repeatable(True)
-    ps.add_valueNodeType("IRI")
+    ps.add_valueNodeType("iri")
     ps.add_valueConstraint("schema:HearingImpairedSupported")
     ps.add_valueConstraint("schema:TollFree")
     ps.add_severity("Violation")
@@ -340,7 +340,7 @@ def simple_ap(
 def test_list2RDFList():
     g = Graph()
     list = [1, 2, 3]
-    node_type = "Literal"
+    node_type = "literal"
     namespaces = {}
     start_node = list2RDFList(g, list, node_type, namespaces)
     g.add((SDO.name, SH_in, start_node))

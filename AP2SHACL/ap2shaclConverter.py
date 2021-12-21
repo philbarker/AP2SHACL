@@ -101,9 +101,9 @@ def list2RDFList(g, list, node_type, namespaces):
     """Convert a python list to an RDF list of items with specified node type"""
     # Currently only deals with lists that are all Literals or all IRIs
     # URIRef - already a rfdlib.URIRef ; anyURI text to convert to URIRef
-    if not (node_type in ["Literal", "anyURI", "URIRef"]):
+    if not (node_type.lower() in ["literal", "anyuri", "uriref"]):
         msg = "Node type " + node_type + " unknown."
-        raise ValueException(msg)
+        raise ValueError(msg)
     # useful to id list start node for testing
     if type(list[0]) is str or (type(list[0]) is URIRef):
         if g.base and g.base in list[0]:
@@ -117,11 +117,11 @@ def list2RDFList(g, list, node_type, namespaces):
     start_node = BNode(start_node_id)
     current_node = start_node
     for item in list:
-        if node_type == "Literal":
+        if node_type.lower() == "literal":
             g.add((current_node, RDF.first, Literal(item)))
-        elif node_type == "URIRef":
+        elif node_type.lower() == "uriref":
             g.add((current_node, RDF.first, item))
-        elif node_type == "anyURI":
+        elif node_type.lower() == "anyuri":
             item_uri = str2URIRef(namespaces, item)
             g.add((current_node, RDF.first, item_uri))
         if item == list[-1]:  # it's the last item
