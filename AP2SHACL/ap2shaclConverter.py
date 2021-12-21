@@ -188,9 +188,13 @@ class AP2SHACLConverter:
                     targetType = SH.targetObjectsOf
                 self.sg.add((shape_uri, targetType, target))
             if ("closed" in keys) and shapeInfo[shape]["closed"] == True:
-                self.sg.add((shape_uri, SH.closed, Literal("True", datatype = XSD.boolean)))
+                self.sg.add(
+                    (shape_uri, SH.closed, Literal("True", datatype=XSD.boolean))
+                )
             elif ("closed" in keys) and shapeInfo[shape]["closed"] == False:
-                self.sg.add((shape_uri, SH.closed, Literal("False", datatype = XSD.boolean)))
+                self.sg.add(
+                    (shape_uri, SH.closed, Literal("False", datatype=XSD.boolean))
+                )
 
     def convert_propertyStatements(self):
         """Add the property statements from the application profile to the SHACL graph as property shapes."""
@@ -250,9 +254,10 @@ class AP2SHACLConverter:
                         datatypeURI = str2URIRef(self.ap.namespaces, valueDataType)
                         self.sg.add((ps_uri, SH.datatype, datatypeURI))
                 if ps.valueConstraints != []:
-                    sh_constrnt_type, constrnts = self.convert_valConstraints(ps)
-                    for c in constrnts:
-                        self.sg.add((ps_uri, sh_constrnt_type, c))
+                    constr_dict = self.convert_valConstraints(ps)
+                    for constr_type in constr_dict.keys():
+                        for c in constr_dict[constr_type]:
+                            self.sg.add((ps_uri, constr_type, c))
                 else:  # no value constraints to add
                     pass
                 if ps.valueShapes != []:
@@ -280,7 +285,7 @@ class AP2SHACLConverter:
             raise Exception(msg)
 
     def convert_valConstraints(self, ps):
-        """Return SHACL value constraint type and list of constraints from property statement with single valueConstraint."""
+        """Return dict of SHACL value constraint types and lists of constraints from property statement with single valueConstraint."""
         valueConstraints = ps.valueConstraints
         constraint_type = ps.valueConstraintType
         node_kind = convert_nodeKind(ps.valueNodeTypes)
@@ -295,7 +300,7 @@ class AP2SHACLConverter:
                 )
             else:
                 raise Exception("Incompatible node kind and constraint.")
-            return (SH_in, [constraint_list])  # return a list of one RDFList
+            return {SH_in: [constraint_list]}  # return a list of one RDFList
         elif constraint_type == "":
             if "Literal" in ps.valueNodeTypes:
                 constraint = Literal(valueConstraints[0])
@@ -303,16 +308,21 @@ class AP2SHACLConverter:
                 constraint = str2URIRef(self.ap.namespaces, valueConstraints[0])
             else:
                 raise Exception("Incompatible node kind and constraint.")
-            return (SH.hasValue, [constraint])
+            return {SH.hasValue: [constraint]}
         elif constraint_type.lower() == "pattern":
             constraint = Literal(valueConstraints[0])
-            return (SH.pattern, [constraint])
+            return {SH.pattern: [constraint]}
         elif constraint_type.lower() == "minlength":
             constraint = Literal(int((valueConstraints[0])))
-            return (SH.minLength, [constraint])
+            return {SH.minLength: [constraint]}
         elif constraint_type.lower() == "maxlength":
             constraint = Literal(int((valueConstraints[0])))
-            return (SH.maxLength, constraints)
+            return {SH.maxLength: [constraint]}
+        elif constraint_type.lower() == "lengthrange":
+            [min, max] = (valueConstraints[0]).split("..")
+            min_constraint = Literal(int(min))
+            max_constraint = Literal(int(max))
+            return {SH.maxLength: [max_constraint], SH.minLength: [min_constraint]}
         else:
             msg = "unknown type of value constraint: " + constraint_type
             raise Exception(msg)

@@ -152,6 +152,32 @@ def email_ps():
 
 
 @pytest.fixture(scope="module")
+def email_length_ps():
+    ps = PropertyStatement()
+    ps.add_shape("#Person")
+    ps.add_property("schema:email")
+    ps.add_label("en", "Email Length")
+    ps.add_valueNodeType("Literal")
+    ps.add_valueDataType("xsd:string")
+    ps.add_valueConstraint("6..1024")
+    ps.add_valueConstraintType("lengthrange")
+    ps.add_severity("Warning")
+    expected_triples.extend(
+        [
+            (BASE.Person, SH.property, BASE.personEmailLength),
+            (BASE.personEmailLength, RDF.type, SH.PropertyShape),
+            (BASE.personEmailLength, SH.path, SDO.email),
+            (BASE.personEmailLength, SH.name, Literal("Email Length", lang="en")),
+            (BASE.personEmailLength, SH.nodeKind, SH.Literal),
+            (BASE.personEmailLength, SH.minLength, Literal(6)),
+            (BASE.personEmailLength, SH.maxLength, Literal(1024)),
+            (BASE.personEmailLength, SH.severity, SH.Warning),
+        ]
+    )
+    return ps
+
+
+@pytest.fixture(scope="module")
 def address_ps():
     ps = PropertyStatement()
     ps.add_shape("#Person")
@@ -252,7 +278,7 @@ def person_shapeInfo():
             (BASE.Person, SH.name, Literal("Person shape", lang="en")),
             (BASE.Person, SH.description, Literal("A shape for tests", lang="en")),
             (BASE.Person, SH.targetClass, schema.Person),
-            (BASE.Person, SH.closed, Literal("True", datatype = XSD.boolean)),
+            (BASE.Person, SH.closed, Literal("True", datatype=XSD.boolean)),
         ]
     )
     return shapeInfo
@@ -287,6 +313,7 @@ def simple_ap(
     person_type_ps,
     contact_ps,
     email_ps,
+    email_length_ps,
     address_ps,
     address_shapeInfo,
     address_type_ps,
@@ -301,6 +328,7 @@ def simple_ap(
     ap.add_propertyStatement(name_ps)
     ap.add_propertyStatement(contact_ps)
     ap.add_propertyStatement(email_ps)
+    ap.add_propertyStatement(email_length_ps)
     ap.add_propertyStatement(address_ps)
     ap.add_shapeInfo("#Address", address_shapeInfo)
     ap.add_propertyStatement(address_type_ps)
@@ -351,7 +379,7 @@ def test_ap2shaclInit(simple_ap):
     assert "dct" in converter.ap.namespaces.keys()
     assert "rdf" in converter.ap.namespaces.keys()
     assert "sh" in converter.ap.namespaces.keys()
-    assert len(converter.ap.propertyStatements) == 7
+    assert len(converter.ap.propertyStatements) == 8
     assert len(converter.ap.shapeInfo) == 2
     assert type(converter.sg) == Graph
 
@@ -359,6 +387,7 @@ def test_ap2shaclInit(simple_ap):
 def test_convert_AP_SHACL(simple_ap):
     converter = AP2SHACLConverter(simple_ap)
     converter.convert_AP_SHACL()
+    converter.dump_shacl()
     all_ns = [n for n in converter.sg.namespace_manager.namespaces()]
     assert ("schema", URIRef("https://schema.org/")) in all_ns
     assert ("sh", URIRef("http://www.w3.org/ns/shacl#")) in all_ns
