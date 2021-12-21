@@ -25,7 +25,7 @@ def make_property_shape_name(ps):
         # need to avoid unnecessary #s
         sh = quote(ps.shapes[0].replace("#", "").replace(" ", "").lower())
     if ps.labels == {}:
-        name = "#" + sh + str(uuid4()).lower()
+        name = sh + str(uuid4()).lower()
         return name
     else:
         languages = ps.labels.keys()
@@ -36,7 +36,7 @@ def make_property_shape_name(ps):
         else:  # just pull the first one that's found
             label = list(ps.labels.values())[0]
         label = label[0].upper() + label[1:]  # lowerCamelCase
-        name = "#" + sh + quote(label.replace(" ", ""))
+        name = sh + quote(label.replace(" ", ""))
         return name
 
 
