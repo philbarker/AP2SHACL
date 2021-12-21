@@ -362,13 +362,13 @@ def test_make_property_shape_name():
     assert type(name) == str
     ps.add_label("fr", "Coleur")
     name = make_property_shape_name(ps)
-    assert name == "#_Coleur"
+    assert name == "_Coleur"
     ps.add_label("en-US", "Color Property")
     name = make_property_shape_name(ps)
-    assert name == "#_ColorProperty"
+    assert name == "_ColorProperty"
     ps.add_label("en", "Colour Property")
     name = make_property_shape_name(ps)
-    assert name == "#_ColourProperty"
+    assert name == "_ColourProperty"
 
 
 def test_ap2shaclInit(simple_ap):
