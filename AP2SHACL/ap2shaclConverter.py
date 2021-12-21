@@ -290,12 +290,12 @@ class AP2SHACLConverter:
         valueConstraints = ps.valueConstraints
         constraint_type = ps.valueConstraintType
         node_kind = convert_nodeKind(ps.valueNodeTypes)
-        if constraint_type.lower == "picklist" or len(valueConstraints) > 1:
-            if "Literal" in ps.valueNodeTypes:
+        if (constraint_type.lower() == "picklist") or (len(valueConstraints) > 1):
+            if "literal" in ps.valueNodeTypes:
                 constraint_list = list2RDFList(
                     self.sg, valueConstraints, "Literal", self.ap.namespaces
                 )
-            elif "IRI" in ps.valueNodeTypes:
+            elif "iri" in ps.valueNodeTypes:
                 constraint_list = list2RDFList(
                     self.sg, valueConstraints, "anyURI", self.ap.namespaces
                 )
