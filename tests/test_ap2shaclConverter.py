@@ -375,7 +375,7 @@ def test_make_property_shape_name():
 
 def test_ap2shaclInit(simple_ap):
     converter = AP2SHACLConverter(simple_ap)
-#    converter.dump_shacl()
+    #    converter.dump_shacl()
     assert type(converter.ap) == AP
     assert converter.ap.metadata["dct:title"] == "Test application profile"
     assert "dct" in converter.ap.namespaces.keys()

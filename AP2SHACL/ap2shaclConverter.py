@@ -197,12 +197,13 @@ class AP2SHACLConverter:
                 self.sg.add(
                     (shape_uri, SH.closed, Literal("False", datatype=XSD.boolean))
                 )
-            if ("ignoreProps" in keys):
+            if "ignoreProps" in keys:
                 if shapeInfo[shape]["ignoreProps"]:
                     properties = shapeInfo[shape]["ignoreProps"]
-                    ignore_list = list2RDFList(self.sg, properties, "CURIE", self.ap.namespaces)
+                    ignore_list = list2RDFList(
+                        self.sg, properties, "CURIE", self.ap.namespaces
+                    )
                     self.sg.add((shape_uri, SH.ignoredProperties, ignore_list))
-
 
     def convert_propertyStatements(self):
         """Add the property statements from the application profile to the SHACL graph as property shapes."""
