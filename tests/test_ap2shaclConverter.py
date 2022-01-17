@@ -12,6 +12,7 @@ schema = Namespace("https://schema.org/")
 SDO = Namespace("https://schema.org/")  # "httpS"
 XSD = Namespace("http://www.w3.org/2001/XMLSchema#")
 BASE = Namespace("http://example.org/shapes#")
+RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 # avoid stoopid conflicts python keywords
 SH_in = URIRef("http://www.w3.org/ns/shacl#in")
 SH_or = URIRef("http://www.w3.org/ns/shacl#or")
@@ -278,7 +279,7 @@ def person_shapeInfo():
             (BASE.Person, SH.name, Literal("Person shape", lang="en")),
             (BASE.Person, SH.description, Literal("A shape for tests", lang="en")),
             (BASE.Person, SH.targetClass, schema.Person),
-            (BASE.Person, SH.ignoredProperties, RDF.type),
+            (BASE.Person, SH.ignoredProperties, BNode("rdf_type")),
             (BASE.Person, SH.closed, Literal("True", datatype=XSD.boolean)),
         ]
     )
@@ -388,7 +389,7 @@ def test_ap2shaclInit(simple_ap):
 def test_convert_AP_SHACL(simple_ap):
     converter = AP2SHACLConverter(simple_ap)
     converter.convert_AP_SHACL()
-#    converter.dump_shacl()
+    converter.dump_shacl()
     all_ns = [n for n in converter.sg.namespace_manager.namespaces()]
     assert ("schema", URIRef("https://schema.org/")) in all_ns
     assert ("sh", URIRef("http://www.w3.org/ns/shacl#")) in all_ns

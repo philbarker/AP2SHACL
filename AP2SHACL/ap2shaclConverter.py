@@ -101,7 +101,7 @@ def list2RDFList(g, list, node_type, namespaces):
     """Convert a python list to an RDF list of items with specified node type"""
     # Currently only deals with lists that are all Literals or all IRIs
     # URIRef - already a rfdlib.URIRef ; anyURI text to convert to URIRef
-    if not (node_type.lower() in ["literal", "anyuri", "uriref"]):
+    if not (node_type.lower() in ["literal", "anyuri", "uriref", "curie"]):
         msg = "Node type " + node_type + " unknown."
         raise ValueError(msg)
     # useful to id list start node for testing
@@ -121,6 +121,8 @@ def list2RDFList(g, list, node_type, namespaces):
             g.add((current_node, RDF.first, Literal(item)))
         elif node_type.lower() == "uriref":
             g.add((current_node, RDF.first, item))
+        elif node_type.lower() == "curie":
+            g.add((current_node, RDF.first, str2URIRef(namespaces, item)))
         elif node_type.lower() == "anyuri":
             item_uri = str2URIRef(namespaces, item)
             g.add((current_node, RDF.first, item_uri))
@@ -197,19 +199,9 @@ class AP2SHACLConverter:
                 )
             if ("ignoreProps" in keys):
                 if shapeInfo[shape]["ignoreProps"]:
-                    ignore = self.convert_uris(shapeInfo[shape]["ignoreProps"])
-                    self.sg.add((shape_uri, SH.ignoredProperties, ignore))
-
-    def convert_uris(self, uri_list):
-        """Convert list of uriRefs to RDF List or single URI."""
-        if type(uri_list) is not list:
-            msg = "Properties to ignore must be a list."
-            raise TypeError(msg)
-        if len(uri_list) == 1:
-            return str2URIRef(self.ap.namespaces, uri_list[0])
-        else:
-            return list2RDFList(self.sg, uri_list, "URIRef", self.ap.namespaces)
-
+                    properties = shapeInfo[shape]["ignoreProps"]
+                    ignore_list = list2RDFList(self.sg, properties, "CURIE", self.ap.namespaces)
+                    self.sg.add((shape_uri, SH.ignoredProperties, ignore_list))
 
 
     def convert_propertyStatements(self):
