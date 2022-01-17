@@ -196,7 +196,6 @@ class AP2SHACLConverter:
                     (shape_uri, SH.closed, Literal("False", datatype=XSD.boolean))
                 )
             if ("ignoreProps" in keys):
-                print("ignore", shapeInfo[shape]["ignoreProps"])
                 if shapeInfo[shape]["ignoreProps"]:
                     ignore = self.convert_uris(shapeInfo[shape]["ignoreProps"])
                     self.sg.add((shape_uri, SH.ignoredProperties, ignore))
