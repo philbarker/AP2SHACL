@@ -293,6 +293,7 @@ def address_shapeInfo():
         "target": "schema:address",
         "targetType": "ObjectsOf",
         "mandatory": False,
+        "ignoreProps": "",
         "severity": "Warning",
     }
     expected_triples.extend(

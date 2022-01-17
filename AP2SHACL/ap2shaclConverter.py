@@ -197,8 +197,9 @@ class AP2SHACLConverter:
                 )
             if ("ignoreProps" in keys):
                 print("ignore", shapeInfo[shape]["ignoreProps"])
-                ignore = self.convert_uris(shapeInfo[shape]["ignoreProps"])
-                self.sg.add((shape_uri, SH.ignoredProperties, ignore))
+                if shapeInfo[shape]["ignoreProps"]:
+                    ignore = self.convert_uris(shapeInfo[shape]["ignoreProps"])
+                    self.sg.add((shape_uri, SH.ignoredProperties, ignore))
 
     def convert_uris(self, uri_list):
         """Convert list of uriRefs to RDF List or single URI."""
