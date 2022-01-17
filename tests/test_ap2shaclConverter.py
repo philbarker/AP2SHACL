@@ -270,7 +270,7 @@ def person_shapeInfo():
         "mandatory": True,
         "severity": "Warning",
         "closed": True,
-        "properties": ["name", "contact", "description"],
+        "ignoreProps": "rdf:type",
     }
     expected_triples.extend(
         [
@@ -278,6 +278,7 @@ def person_shapeInfo():
             (BASE.Person, SH.name, Literal("Person shape", lang="en")),
             (BASE.Person, SH.description, Literal("A shape for tests", lang="en")),
             (BASE.Person, SH.targetClass, schema.Person),
+            (BASE.Person, SH.ignoredProperties, RDF.type),
             (BASE.Person, SH.closed, Literal("True", datatype=XSD.boolean)),
         ]
     )
@@ -293,7 +294,6 @@ def address_shapeInfo():
         "targetType": "ObjectsOf",
         "mandatory": False,
         "severity": "Warning",
-        "properties": [],
     }
     expected_triples.extend(
         [
@@ -373,7 +373,7 @@ def test_make_property_shape_name():
 
 def test_ap2shaclInit(simple_ap):
     converter = AP2SHACLConverter(simple_ap)
-    converter.dump_shacl()
+#    converter.dump_shacl()
     assert type(converter.ap) == AP
     assert converter.ap.metadata["dct:title"] == "Test application profile"
     assert "dct" in converter.ap.namespaces.keys()
@@ -387,7 +387,7 @@ def test_ap2shaclInit(simple_ap):
 def test_convert_AP_SHACL(simple_ap):
     converter = AP2SHACLConverter(simple_ap)
     converter.convert_AP_SHACL()
-    converter.dump_shacl()
+#    converter.dump_shacl()
     all_ns = [n for n in converter.sg.namespace_manager.namespaces()]
     assert ("schema", URIRef("https://schema.org/")) in all_ns
     assert ("sh", URIRef("http://www.w3.org/ns/shacl#")) in all_ns

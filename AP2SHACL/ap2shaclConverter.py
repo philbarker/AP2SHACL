@@ -195,6 +195,22 @@ class AP2SHACLConverter:
                 self.sg.add(
                     (shape_uri, SH.closed, Literal("False", datatype=XSD.boolean))
                 )
+            if ("ignoreProps" in keys):
+                print("ignore", shapeInfo[shape]["ignoreProps"])
+                ignore = self.convert_uris(shapeInfo[shape]["ignoreProps"])
+                self.sg.add((shape_uri, SH.ignoredProperties, ignore))
+
+    def convert_uris(self, uri_list):
+        """Convert list of uriRefs to RDF List or single URI."""
+        if type(uri_list) is not list:
+            msg = "Properties to ignore must be a list."
+            raise TypeError(msg)
+        if len(uri_list) == 1:
+            return str2URIRef(self.ap.namespaces, uri_list[0])
+        else:
+            return list2RDFList(self.sg, uri_list, "URIRef", self.ap.namespaces)
+
+
 
     def convert_propertyStatements(self):
         """Add the property statements from the application profile to the SHACL graph as property shapes."""
