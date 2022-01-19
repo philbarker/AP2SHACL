@@ -101,20 +101,10 @@ def list2RDFList(g, list, node_type, namespaces):
     """Convert a python list to an RDF list of items with specified node type"""
     # Currently only deals with lists that are all Literals or all IRIs
     # URIRef - already a rfdlib.URIRef ; anyURI text to convert to URIRef
-    if not (node_type.lower() in ["literal", "anyuri", "uriref", "curie"]):
+    if not (node_type.lower() in ["literal", "anyuri", "uriref", "curie", "bnode"]):
         msg = "Node type " + node_type + " unknown."
         raise ValueError(msg)
-    # useful to id list start node for testing
-    if type(list[0]) is str or (type(list[0]) is URIRef):
-        if g.base and g.base in list[0]:
-            start_node_id = quote(list[0].replace(g.base, ""))
-        else:
-            start_node_id = quote(list[0].replace(":", "_"))
-    elif (type(list[0]) is int) or (type(list[0]) is float):
-        start_node_id = list[0]
-    else:
-        start_node_id = None
-    start_node = BNode(start_node_id)
+    start_node = BNode()
     current_node = start_node
     for item in list:
         if node_type.lower() == "literal":
@@ -126,6 +116,8 @@ def list2RDFList(g, list, node_type, namespaces):
         elif node_type.lower() == "anyuri":
             item_uri = str2URIRef(namespaces, item)
             g.add((current_node, RDF.first, item_uri))
+        elif node_type.lower() == "bnode":
+            g.add((current_node, RDF.first, item))
         if item == list[-1]:  # it's the last item
             g.add((current_node, RDF.rest, RDF.nil))
         else:
@@ -214,6 +206,7 @@ class AP2SHACLConverter:
                 ps_ids = []
                 severity = self.convert_severity(ps.severity)
                 for p in ps.properties:
+                    # TODO this needs revisting, half the elements aren't processed
                     prop = quote(p.replace("#", "").replace(":", "_"))
                     ps_name = make_property_shape_name(ps) + "_" + prop + "_opt"
                     ps_id = str2URIRef(self.ap.namespaces, ps_name)
@@ -260,9 +253,8 @@ class AP2SHACLConverter:
                     if nodeKind is not None:
                         self.sg.add((ps_uri, SH.nodeKind, nodeKind))
                 if ps.valueDataTypes != []:
-                    for valueDataType in ps.valueDataTypes:
-                        datatypeURI = str2URIRef(self.ap.namespaces, valueDataType)
-                        self.sg.add((ps_uri, SH.datatype, datatypeURI))
+                    (shProp, val) = self.convert_valueDataTypes(ps.valueDataTypes)
+                    self.sg.add((ps_uri, shProp, val))
                 if ps.valueConstraints != []:
                     constr_dict = self.convert_valConstraints(ps)
                     for constr_type in constr_dict.keys():
@@ -293,6 +285,31 @@ class AP2SHACLConverter:
         else:
             msg = "severity not recognised: " + ps.severity
             raise Exception(msg)
+
+    def convert_valueDataTypes(self, dataTypes):
+        """Retrun a duple of shacl property and value for data type constraints.
+
+        If there is a single data type, the shacl property is sh:datatype and the value is the xsd:datatype; if there are more than one datatypes, the shacl property is sh:or and the value is the first node in a list of BNodes each with predicate sh:datatype and object xsd:datatype."""
+        if type(dataTypes) is not list:
+            msg = "Data types must be in a list."
+            raise TypeError(msg)
+        elif len(dataTypes) == 0:
+            msg = "No datatypes to convert."
+            raise ValueError(msg)
+        elif len(dataTypes) == 1:
+            p = SH.datatype
+            v = str2URIRef(self.ap.namespaces, dataTypes[0])
+            return (p, v)
+        else:
+            bnode_list = list()
+            for dataType in dataTypes:
+                bnode = BNode()
+                dataTypeURI = str2URIRef(self.ap.namespaces, dataType)
+                self.sg.add((bnode, SH.datatype, dataTypeURI))
+                bnode_list.append(bnode)
+            p = SH_or
+            v = list2RDFList(self.sg, bnode_list, "bnode", self.ap.namespaces)
+            return (p, v)
 
     def convert_valConstraints(self, ps):
         """Return dict of SHACL value constraint types and lists of constraints from property statement with single valueConstraint."""

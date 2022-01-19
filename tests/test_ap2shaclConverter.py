@@ -17,7 +17,9 @@ RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 SH_in = URIRef("http://www.w3.org/ns/shacl#in")
 SH_or = URIRef("http://www.w3.org/ns/shacl#or")
 SH_class = URIRef("http://www.w3.org/ns/shacl#class")
-expected_triples = []
+expected_triples = []  # used to test for triples expected in graph
+expected_ttl = []  # used for to test for prefixes and lists expected in graph
+# because (a) not triples, (b) blank nodes not reproducible
 
 
 @pytest.fixture(scope="module")
@@ -29,6 +31,7 @@ def name_ps():
     ps.add_label("es", "Nombre")
     ps.add_valueNodeType("literal")
     ps.add_valueDataType("xsd:string")
+    ps.add_valueDataType("rdf:langString")
     ps.add_valueConstraintType("minLength")
     ps.add_valueConstraint("2")
     ps.add_mandatory(True)
@@ -41,11 +44,13 @@ def name_ps():
             (BASE.personName, SH.path, SDO.name),
             (BASE.personName, SH.name, Literal("Name", lang="en")),
             (BASE.personName, SH.name, Literal("Nombre", lang="es")),
-            (BASE.personName, SH.datatype, XSD.string),
             (BASE.personName, SH.minLength, Literal(2)),
             (BASE.personName, SH.minCount, Literal(1)),
             (BASE.personName, SH.severity, SH.Violation),
         ]
+    )
+    expected_ttl.extend(
+        "sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;"
     )
     return ps
 
@@ -106,12 +111,6 @@ def contact_ps():
     ps.add_severity("Violation")
     expected_triples.extend(
         [
-            (BASE.Person, SH_or, BNode("personContact_schema_email_opt")),
-            (
-                BNode("personContact_schema_email_opt"),
-                RDF.first,
-                BASE.personContact_schema_email_opt,
-            ),
             (BASE.personContact_schema_email_opt, RDF.type, SH.PropertyShape),
             (BASE.personContact_schema_email_opt, SH.path, SDO.email),
             (BASE.personContact_schema_email_opt, SH.minCount, Literal(1)),
@@ -121,6 +120,9 @@ def contact_ps():
             (BASE.personContact_schema_address_opt, SH.minCount, Literal(1)),
             (BASE.personContact_schema_address_opt, SH.severity, SH.Violation),
         ]
+    )
+    expected_ttl.extend(
+        "sh:or ( <personContact_schema_email_opt> <personContact_schema_address_opt> ) ;"
     )
     return ps
 
@@ -246,18 +248,9 @@ def address_option_ps():
                 Literal("Contact Option", lang="en"),
             ),
             (BASE.addressContactOption, SH.nodeKind, SH.IRI),
-            (
-                BASE.addressContactOption,
-                SH_in,
-                BNode("schema_HearingImpairedSupported"),
-            ),
-            (
-                BNode("schema_HearingImpairedSupported"),
-                RDF.first,
-                SDO.HearingImpairedSupported,
-            ),
         ]
     )
+    expected_ttl.extend("sh:in ( schema:HearingImpairedSupported schema:TollFree ) ;")
     return ps
 
 
@@ -279,10 +272,10 @@ def person_shapeInfo():
             (BASE.Person, SH.name, Literal("Person shape", lang="en")),
             (BASE.Person, SH.description, Literal("A shape for tests", lang="en")),
             (BASE.Person, SH.targetClass, schema.Person),
-            (BASE.Person, SH.ignoredProperties, BNode("rdf_type")),
             (BASE.Person, SH.closed, Literal("True", datatype=XSD.boolean)),
         ]
     )
+    expected_ttl.extend("sh:ignoredProperties ( rdf:type ) ;")
     return shapeInfo
 
 
@@ -335,7 +328,16 @@ def simple_ap(
     ap.add_shapeInfo("#Address", address_shapeInfo)
     ap.add_propertyStatement(address_type_ps)
     ap.add_propertyStatement(address_option_ps)
-
+    expected_ttl.extend(
+        [
+            "@base <http://example.org/shapes#> .",
+            "@prefix base: <http://example.org/shapes#> .",
+            "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
+            "@prefix schema: <https://schema.org/> .",
+            "@prefix sh: <http://www.w3.org/ns/shacl#> .",
+            "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .",
+        ]
+    )
     return ap
 
 
@@ -355,6 +357,12 @@ def test_list2RDFList():
     start_node = list2RDFList(g, list, node_type, namespaces)
     g.add((URIRef("#cont"), SH_or, start_node))
     expected_ttl = "<#cont> ns1:or ( <https://schema.org/address> <https://schema.org/email> <https://schema.org/contactOption> )"
+    assert expected_ttl in g.serialize(format="turtle")
+    list = [BNode(1), BNode(2), BNode(3)]
+    node_type = "bnode"
+    start_node = list2RDFList(g, list, node_type, {})
+    g.add((URIRef("#blank"), SH_or, start_node))
+    expected_ttl = "<#blank> ns1:or ( [ ] [ ] [ ] )"
     assert expected_ttl in g.serialize(format="turtle")
 
 
@@ -396,3 +404,6 @@ def test_convert_AP_SHACL(simple_ap):
     assert ("base", URIRef("http://example.org/shapes#")) in all_ns
     for t in expected_triples:
         assert t in converter.sg
+    ttl = converter.sg.serialize(format="turtle")
+    for s in expected_ttl:
+        assert s in ttl
