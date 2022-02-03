@@ -4,7 +4,9 @@ from AP2SHACL import (
     make_property_shape_name,
     list2RDFList,
     AP,
-    PropertyStatement, ShapeInfo, read_shapeInfoDict
+    PropertyStatement,
+    ShapeInfo,
+    read_shapeInfoDict,
 )
 from rdflib import Graph, URIRef, Literal, BNode, Namespace, RDF, RDFS, SH
 
@@ -257,13 +259,13 @@ def address_option_ps():
 @pytest.fixture(scope="module")
 def person_shapeInfo():
     shapeInfo = ShapeInfo(
-        label = {"en": "Person shape"},
-        comment = {"en": "A shape for tests"},
-        targets = {"class": "schema:Person"},
-        mandatory = True,
-        severity = "warning",
-        closed = True,
-        ignoreProps = ["rdf:type"],
+        label={"en": "Person shape"},
+        comment={"en": "A shape for tests"},
+        targets={"class": "schema:Person"},
+        mandatory=True,
+        severity="warning",
+        closed=True,
+        ignoreProps=["rdf:type"],
     )
     expected_triples.extend(
         [
@@ -281,13 +283,12 @@ def person_shapeInfo():
 @pytest.fixture(scope="module")
 def address_shapeInfo():
     shapeInfo = ShapeInfo(
-        label = {"en": "Address shape"},
-        comment = {"en": "A shape for tests"},
-        targets = {"ObjectsOf": "schema:address",
-           "class": "schema:PostalAddress"},
-        mandatory = False,
-        ignoreProps = [],
-        severity = "Warning",
+        label={"en": "Address shape"},
+        comment={"en": "A shape for tests"},
+        targets={"ObjectsOf": "schema:address", "class": "schema:PostalAddress"},
+        mandatory=False,
+        ignoreProps=[],
+        severity="Warning",
     )
     expected_triples.extend(
         [
