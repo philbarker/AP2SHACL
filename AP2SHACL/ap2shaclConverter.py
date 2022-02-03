@@ -158,44 +158,43 @@ class AP2SHACLConverter:
         for shape in shapeInfo.keys():
             shape_uri = str2URIRef(self.ap.namespaces, shape)
             self.sg.add((shape_uri, RDF.type, SH.NodeShape))
-            keys = shapeInfo[shape].keys()
-            if ("label" in keys) and shapeInfo[shape]["label"]:
-                label = Literal(shapeInfo[shape]["label"], lang=lang)
+            if shapeInfo[shape].label:
+                for key in shapeInfo[shape].label.keys():
+                    value = shapeInfo[shape].label[key]
+                    label = Literal(value, lang=key)
                 self.sg.add((shape_uri, SH.name, label))
-            if ("comment" in keys) and shapeInfo[shape]["comment"]:
-                comment = Literal(shapeInfo[shape]["comment"], lang=lang)
-                self.sg.add((shape_uri, SH.description, comment))
-            if (
-                ("target" in keys)
-                and shapeInfo[shape]["target"]
-                and ("targetType" in keys)
-                and shapeInfo[shape]["targetType"]
-            ):
-                target = str2URIRef(self.ap.namespaces, shapeInfo[shape]["target"])
-                if shapeInfo[shape]["targetType"].lower() == "class":
-                    targetType = SH.targetClass
-                elif shapeInfo[shape]["targetType"].lower() == "node":
-                    targetType = SH.tagetNode
-                elif shapeInfo[shape]["targetType"].lower() == "subjectsof":
-                    targetType = SH.targetSubjectsOf
-                elif shapeInfo[shape]["targetType"].lower() == "objectsof":
-                    targetType = SH.targetObjectsOf
-                self.sg.add((shape_uri, targetType, target))
-            if ("closed" in keys) and shapeInfo[shape]["closed"] == True:
+            if shapeInfo[shape].comment:
+                for key in shapeInfo[shape].comment.keys():
+                    value = shapeInfo[shape].comment[key]
+                    comment = Literal(value, lang=key)
+                    self.sg.add((shape_uri, SH.description, comment))
+            if shapeInfo[shape].targets:
+                for key in shapeInfo[shape].targets.keys():
+                    t = shapeInfo[shape].targets[key]
+                    target = str2URIRef(self.ap.namespaces, t)
+                    if key.lower() == "class":
+                        targetType = SH.targetClass
+                    elif key.lower() == "node":
+                        targetType = SH.tagetNode
+                    elif key.lower() == "subjectsof":
+                        targetType = SH.targetSubjectsOf
+                    elif key.lower() == "objectsof":
+                        targetType = SH.targetObjectsOf
+                    self.sg.add((shape_uri, targetType, target))
+            if shapeInfo[shape].closed == True:
                 self.sg.add(
                     (shape_uri, SH.closed, Literal("True", datatype=XSD.boolean))
                 )
-            elif ("closed" in keys) and shapeInfo[shape]["closed"] == False:
+            elif shapeInfo[shape].closed == False:
                 self.sg.add(
                     (shape_uri, SH.closed, Literal("False", datatype=XSD.boolean))
                 )
-            if "ignoreProps" in keys:
-                if shapeInfo[shape]["ignoreProps"]:
-                    properties = shapeInfo[shape]["ignoreProps"]
-                    ignore_list = list2RDFList(
-                        self.sg, properties, "CURIE", self.ap.namespaces
-                    )
-                    self.sg.add((shape_uri, SH.ignoredProperties, ignore_list))
+            if shapeInfo[shape].ignoreProps:
+                properties = shapeInfo[shape].ignoreProps
+                ignore_list = list2RDFList(
+                    self.sg, properties, "CURIE", self.ap.namespaces
+                )
+                self.sg.add((shape_uri, SH.ignoredProperties, ignore_list))
 
     def convert_propertyStatements(self):
         """Add the property statements from the application profile to the SHACL graph as property shapes."""
