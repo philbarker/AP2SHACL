@@ -349,6 +349,12 @@ class AP2SHACLConverter:
             min_constraint = Literal(int(min))
             max_constraint = Literal(int(max))
             return {SH.maxLength: [max_constraint], SH.minLength: [min_constraint]}
+        elif constraint_type.lower() == "maximum":
+            constraint = Literal(int((valueConstraints[0])))
+            return {SH.maxInclusive: [constraint]}
+        elif constraint_type.lower() == "minimum":
+            constraint = Literal(int((valueConstraints[0])))
+            return {SH.minInclusive: [constraint]}
         else:
             msg = "unknown type of value constraint: " + constraint_type
             raise Exception(msg)

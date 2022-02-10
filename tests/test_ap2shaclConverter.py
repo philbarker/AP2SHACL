@@ -56,6 +56,47 @@ def name_ps():
     )
     return ps
 
+@pytest.fixture(scope="module")
+def ageMax_ps():
+    ps = PropertyStatement()
+    ps.add_shape("#Person")
+    ps.add_property("schema:age")
+    ps.add_label("en", "Age")
+    ps.add_valueNodeType("literal")
+    ps.add_valueDataType("xsd:decimal")
+    ps.add_valueConstraintType("maximum")
+    ps.add_valueConstraint("150")
+    ps.add_severity("Violation")
+    expected_triples.extend(
+        [
+            (BASE.Person, SH.property, BASE.personAge),
+            (BASE.personAge, RDF.type, SH.PropertyShape),
+            (BASE.personAge, SH.path, SDO.age),
+            (BASE.personAge, SH.name, Literal("Age", lang="en")),
+            (BASE.personAge, SH.maxInclusive, Literal(150)),
+            (BASE.personAge, SH.severity, SH.Violation),
+        ]
+    )
+    return ps
+
+@pytest.fixture(scope="module")
+def ageMin_ps():
+    ps = PropertyStatement()
+    ps.add_shape("#Person")
+    ps.add_property("schema:age")
+    ps.add_label("en", "Age")
+    ps.add_valueNodeType("literal")
+    ps.add_valueDataType("xsd:decimal")
+    ps.add_valueConstraintType("minimum")
+    ps.add_valueConstraint("18")
+    ps.add_severity("Violation")
+    expected_triples.extend(
+        [
+            (BASE.personAge, SH.minInclusive, Literal(18)),
+        ]
+    )
+    return ps
+
 
 def description_ps():
     ps = PropertyStatement()
@@ -306,6 +347,8 @@ def address_shapeInfo():
 def simple_ap(
     person_shapeInfo,
     name_ps,
+    ageMin_ps,
+    ageMax_ps,
     person_type_ps,
     contact_ps,
     email_ps,
@@ -322,6 +365,8 @@ def simple_ap(
     ap.add_shapeInfo("#Person", person_shapeInfo)
     ap.add_propertyStatement(person_type_ps)
     ap.add_propertyStatement(name_ps)
+    ap.add_propertyStatement(ageMax_ps)
+    ap.add_propertyStatement(ageMin_ps)
     ap.add_propertyStatement(contact_ps)
     ap.add_propertyStatement(email_ps)
     ap.add_propertyStatement(email_length_ps)
@@ -390,7 +435,7 @@ def test_ap2shaclInit(simple_ap):
     assert "dct" in converter.ap.namespaces.keys()
     assert "rdf" in converter.ap.namespaces.keys()
     assert "sh" in converter.ap.namespaces.keys()
-    assert len(converter.ap.propertyStatements) == 8
+    assert len(converter.ap.propertyStatements) == 10
     assert len(converter.ap.shapeInfo) == 2
     assert type(converter.sg) == Graph
 
