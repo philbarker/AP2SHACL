@@ -325,6 +325,7 @@ class AP2SHACLConverter:
                     self.sg, valueConstraints, "anyURI", self.ap.namespaces
                 )
             else:
+                print("Property statement is: ", ps)
                 raise Exception("Incompatible node kind and constraint.")
             return {SH_in: [constraint_list]}  # return a list of one RDFList
         elif constraint_type == "":
@@ -333,6 +334,7 @@ class AP2SHACLConverter:
             elif "IRI" in ps.valueNodeTypes:
                 constraint = str2URIRef(self.ap.namespaces, valueConstraints[0])
             else:
+                print("Property statement is: ", ps)
                 raise Exception("Incompatible node kind and constraint.")
             return {SH.hasValue: [constraint]}
         elif constraint_type.lower() == "pattern":
@@ -356,6 +358,7 @@ class AP2SHACLConverter:
             constraint = Literal(int((valueConstraints[0])))
             return {SH.minInclusive: [constraint]}
         else:
+            print("Property statement is: ", ps)
             msg = "unknown type of value constraint: " + constraint_type
             raise Exception(msg)
 
