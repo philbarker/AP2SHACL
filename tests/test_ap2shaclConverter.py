@@ -131,7 +131,7 @@ def person_type_ps():
     ps.add_label("en", "Type")
     ps.add_mandatory(True)
     ps.add_repeatable(False)
-    ps.add_valueNodeType("iri")
+    ps.add_valueNodeType("IRI")
     ps.add_valueConstraint("schema:Person")
     ps.add_severity("Violation")
     expected_triples.extend(
