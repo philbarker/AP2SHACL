@@ -57,6 +57,7 @@ def name_ps():
     )
     return ps
 
+
 @pytest.fixture(scope="module")
 def ageMax_ps():
     ps = PropertyStatement()
@@ -79,6 +80,7 @@ def ageMax_ps():
         ]
     )
     return ps
+
 
 @pytest.fixture(scope="module")
 def ageMin_ps():
@@ -455,16 +457,13 @@ def test_convert_AP_SHACL(simple_ap):
     for s in expected_ttl:
         assert s in ttl
 
+
 def test_str2URIRef():
-    ns = {
-        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    }
+    ns = {"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
     string = "rdf:label"
     uri = str2URIRef(ns, string)
     assert uri == RDF.label
-    ns = {
-        "base": "https://schema.org/"
-    }
+    ns = {"base": "https://schema.org/"}
     string = "name"
     uri = str2URIRef(ns, string)
     assert uri == SDO.name

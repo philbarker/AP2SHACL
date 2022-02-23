@@ -331,7 +331,7 @@ class AP2SHACLConverter:
         elif constraint_type == "":
             if "literal" in ps.valueNodeTypes:
                 constraint = Literal(valueConstraints[0])
-            elif "iri" in ps.valueNodeTypes :
+            elif "iri" in ps.valueNodeTypes:
                 constraint = str2URIRef(self.ap.namespaces, valueConstraints[0])
             else:
                 print("Property statement is: ", ps)
