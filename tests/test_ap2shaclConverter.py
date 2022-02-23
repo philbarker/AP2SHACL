@@ -471,12 +471,20 @@ def test_str2URIRef():
     ns = {}
     uri = str2URIRef(ns, string)
     assert uri == URIRef(string)
+    uri = str2URIRef({}, "name")
+    assert uri == URIRef("http://example.org/name")
+    ns = {"base": "http://example.org/terms#"}
+    uri = str2URIRef(ns, "#name")  # make sure the extra # is stripped
+    assert uri == URIRef("http://example.org/terms#name")
     with pytest.raises(TypeError) as e:
         uri = str2URIRef([], "name")
     assert str(e.value) == "Namespaces should be a dictionary."
     with pytest.raises(TypeError) as e:
         uri = str2URIRef({}, 42)
-    assert str(e.value) == "Value to convert should be a string."
+    assert str(e.value) == "Value to convert should be a non-empty string."
+    with pytest.raises(TypeError) as e:
+        uri = str2URIRef({}, "")
+    assert str(e.value) == "Value to convert should be a non-empty string."
     with pytest.raises(ValueError) as e:
         uri = str2URIRef({}, "ns:name")
     assert str(e.value) == "Prefix ns not in namespace list."

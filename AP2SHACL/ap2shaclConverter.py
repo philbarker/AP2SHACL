@@ -47,10 +47,10 @@ def str2URIRef(namespaces, s):
     else:
         msg = "Namespaces should be a dictionary."
         raise TypeError(msg)
-    if type(s) is str:
+    if type(s) is str and len(s) > 0:
         pass
     else:
-        msg = "Value to convert should be a string."
+        msg = "Value to convert should be a non-empty string."
         raise TypeError(msg)
     if "base" in namespaces.keys():
         base = namespaces["base"]
