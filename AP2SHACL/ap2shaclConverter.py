@@ -106,9 +106,11 @@ def list2RDFList(g, list, node_type, namespaces):
         raise ValueError(msg)
     start_node = BNode()
     current_node = start_node
+    try:
+        list.remove("")
+    except ValueError :
+        pass    
     for item in list:
-        if item == "":
-            continue  # best not to have them, but ignore any empty items
         if node_type.lower() == "literal":
             g.add((current_node, RDF.first, Literal(item)))
         elif node_type.lower() == "uriref":
