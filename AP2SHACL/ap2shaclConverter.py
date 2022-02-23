@@ -50,7 +50,7 @@ def str2URIRef(namespaces, s):
     if type(s) is str:
         pass
     else:
-        msg = "value to convert should be a string not " + type(s)
+        msg = "Value to convert should be a string."
         raise TypeError(msg)
     if "base" in namespaces.keys():
         base = namespaces["base"]
@@ -58,7 +58,7 @@ def str2URIRef(namespaces, s):
         base = default_base
     if ":" in s:
         [pre, name] = s.split(":", 1)
-        if pre == ("http" or "https"):
+        if pre.lower() in ["http", "https"]:  # TODO: make this configurable
             return URIRef(s)
         elif pre in namespaces.keys():
             return URIRef(namespaces[pre] + name)

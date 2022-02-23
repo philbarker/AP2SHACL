@@ -7,6 +7,7 @@ from AP2SHACL import (
     PropertyStatement,
     ShapeInfo,
     read_shapeInfoDict,
+    str2URIRef,
 )
 from rdflib import Graph, URIRef, Literal, BNode, Namespace, RDF, RDFS, SH
 
@@ -453,3 +454,30 @@ def test_convert_AP_SHACL(simple_ap):
     ttl = converter.sg.serialize(format="turtle")
     for s in expected_ttl:
         assert s in ttl
+
+def test_str2URIRef():
+    ns = {
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    }
+    string = "rdf:label"
+    uri = str2URIRef(ns, string)
+    assert uri == RDF.label
+    ns = {
+        "base": "https://schema.org/"
+    }
+    string = "name"
+    uri = str2URIRef(ns, string)
+    assert uri == SDO.name
+    string = "https://schema.org/description"
+    ns = {}
+    uri = str2URIRef(ns, string)
+    assert uri == URIRef(string)
+    with pytest.raises(TypeError) as e:
+        uri = str2URIRef([], "name")
+    assert str(e.value) == "Namespaces should be a dictionary."
+    with pytest.raises(TypeError) as e:
+        uri = str2URIRef({}, 42)
+    assert str(e.value) == "Value to convert should be a string."
+    with pytest.raises(ValueError) as e:
+        uri = str2URIRef({}, "ns:name")
+    assert str(e.value) == "Prefix ns not in namespace list."
