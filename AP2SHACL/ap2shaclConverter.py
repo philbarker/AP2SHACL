@@ -190,6 +190,10 @@ class AP2SHACLConverter:
                         targetType = SH.targetSubjectsOf
                     elif key.lower() == "objectsof":
                         targetType = SH.targetObjectsOf
+                    else:
+                        print(shapeInfo[shape])
+                        msg = "targetType not recognised"
+                        raise ValueError(msg)
                     self.sg.add((shape_uri, targetType, target))
             if shapeInfo[shape].closed == True:
                 self.sg.add(
