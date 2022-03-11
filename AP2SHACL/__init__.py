@@ -4,4 +4,5 @@ from .ap2shaclConverter import (
     make_property_shape_name,
     list2RDFList,
     str2URIRef,
+    convert_nodeKind,
 )

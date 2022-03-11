@@ -73,10 +73,15 @@ def str2URIRef(namespaces, s):
         return URIRef(base + quote(s))
 
 
-def convert_nodeKind(node_TYPES):
+def convert_nodeKind(node_types):
     """Return a shacl nodeKind IRI based on list of permitted node types."""
     # first convert all permitted node type strings in list to lower case
-    node_types = list((map(lambda x: x.lower(), node_TYPES)))
+    if type(node_types) is list:
+        pass
+    else:
+        print(node_types)
+        raise TypeError("Node_types must be a list.")
+    node_types = list((map(lambda x: x.lower(), node_types)))
     if ("iri" in node_types) and ("bnode" in node_types) and ("literal" in node_types):
         return None
     if ("iri" in node_types) and ("bnode" in node_types):
@@ -92,8 +97,9 @@ def convert_nodeKind(node_TYPES):
     elif "literal" in node_types:
         return SH.Literal
     else:
-        msg = "Node type " + node_type + " unknown."
-        raise Exception(msg)
+        print(node_types)
+        msg = "Node type unknown."
+        raise ValueError(msg)
         return None
 
 
@@ -108,8 +114,8 @@ def list2RDFList(g, list, node_type, namespaces):
     current_node = start_node
     try:
         list.remove("")
-    except ValueError :
-        pass    
+    except ValueError:
+        pass
     for item in list:
         if node_type.lower() == "literal":
             g.add((current_node, RDF.first, Literal(item)))

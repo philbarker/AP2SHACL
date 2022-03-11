@@ -8,6 +8,7 @@ from AP2SHACL import (
     ShapeInfo,
     read_shapeInfoDict,
     str2URIRef,
+    convert_nodeKind,
 )
 from rdflib import Graph, URIRef, Literal, BNode, Namespace, RDF, RDFS, SH
 
@@ -488,3 +489,19 @@ def test_str2URIRef():
     with pytest.raises(ValueError) as e:
         uri = str2URIRef({}, "ns:name")
     assert str(e.value) == "Prefix ns not in namespace list."
+
+
+def test_convertNodeKind():
+    assert convert_nodeKind(["IrI"]) == SH.IRI
+    assert convert_nodeKind(["bNode"]) == SH.BlankNode
+    assert convert_nodeKind(["literal"]) == SH.Literal
+    assert convert_nodeKind(["IrI", "BNode"]) == SH.BlankNodeOrIRI
+    assert convert_nodeKind(["IrI", "Literal"]) == SH.IRIOrLiteral
+    assert convert_nodeKind(["bnode", "Literal"]) == SH.BlankNodeOrLiteral
+    assert convert_nodeKind(["iri", "bnode", "literal"]) == None
+    with pytest.raises(TypeError) as e:
+        convert_nodeKind("IRI")
+    assert str(e.value) == "Node_types must be a list."
+    with pytest.raises(ValueError) as e:
+        convert_nodeKind(["wrong"])
+    assert str(e.value) == "Node type unknown."
