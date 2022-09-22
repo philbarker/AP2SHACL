@@ -216,6 +216,7 @@ class AP2SHACLConverter:
         # TODO: consider if alterntves in sh.or could be special cases like type
         for ps in self.ap.propertyStatements:
             if len(ps.properties) > 1:
+                print("Warning: property template with multiple properties is not fully supported.")
                 ps_ids = []
                 severity = self.convert_severity(ps.severity)
                 for p in ps.properties:
@@ -235,7 +236,7 @@ class AP2SHACLConverter:
                     if severity:
                         self.sg.add(((ps_opt_uri, SH.severity, severity)))
                 or_list = list2RDFList(self.sg, ps_ids, "URIRef", self.ap.namespaces)
-                self.sg.add((shape_uri, SH_or, or_list))
+                self.sg.add((ps_opt_uri, SH_or, or_list))
             elif ps.properties == ["rdf:type"]:
                 # this is the way that TAP asserts objects must be of certain type, we can use sh:class instead
                 for shape in ps.shapes:
