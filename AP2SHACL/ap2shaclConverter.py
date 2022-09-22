@@ -217,7 +217,6 @@ class AP2SHACLConverter:
         for ps in self.ap.propertyStatements:
             if len(ps.properties) > 1:
                 print("Warning: property template with multiple properties is not fully supported.")
-                break()
                 ps_ids = []
                 severity = self.convert_severity(ps.severity)
                 for p in ps.properties:
@@ -237,7 +236,10 @@ class AP2SHACLConverter:
                     if severity:
                         self.sg.add(((ps_opt_uri, SH.severity, severity)))
                 or_list = list2RDFList(self.sg, ps_ids, "URIRef", self.ap.namespaces)
-                self.sg.add((ps_opt_uri, SH_or, or_list))
+                for sh in ps.shapes:
+                    self.sg.add(
+                        (str2URIRef(self.ap.namespaces, sh), SH.property, ps_opt_uri)
+                    )
             elif ps.properties == ["rdf:type"]:
                 # this is the way that TAP asserts objects must be of certain type, we can use sh:class instead
                 for shape in ps.shapes:
