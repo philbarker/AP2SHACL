@@ -217,7 +217,11 @@ class AP2SHACLConverter:
         for ps in self.ap.propertyStatements:
             if len(ps.properties) > 1:
                 print("Warning: property template with multiple properties is not fully supported.")
+<<<<<<< HEAD
                 break()
+=======
+                next()
+>>>>>>> 211dc015d9306e0a6236f36e6b122545991ac11b
                 ps_ids = []
                 severity = self.convert_severity(ps.severity)
                 for p in ps.properties:
