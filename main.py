@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from AP import AP, PropertyStatement
+from AP import AP, StatementTemplate
 from AP2SHACL import AP2SHACLConverter, make_property_shape_id, list2RDFList
 
 if __name__ == "__main__":

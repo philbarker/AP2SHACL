@@ -1,4 +1,4 @@
-from AP import AP, PropertyStatement
+from AP import AP, StatementTemplate
 from rdflib import Graph, URIRef, Literal, BNode, Namespace
 from rdflib import SH, RDF, RDFS, XSD, SDO
 from rdflib.collection import Collection
@@ -146,7 +146,7 @@ class AP2SHACLConverter:
     def convert_AP_SHACL(self):
         self.convert_namespaces()
         self.convert_shapes()
-        self.convert_propertyStatements()
+        self.convert_statementTemplates()
 
     def convert_namespaces(self):
         """Bind the namespaces in the application profle to the SHACL graph."""
@@ -210,11 +210,11 @@ class AP2SHACLConverter:
                 )
                 self.sg.add((shape_uri, SH.ignoredProperties, ignore_list))
 
-    def convert_propertyStatements(self):
+    def convert_statementTemplates(self):
         """Add the property statements from the application profile to the SHACL graph as property shapes."""
         # TODO: untangle this : there must be repeats that can be factored out
         # TODO: consider if alterntves in sh.or could be special cases like type
-        for ps in self.ap.propertyStatements:
+        for ps in self.ap.statementTemplates:
             if len(ps.properties) > 1:
                 print("# Warning: property template with multiple properties is not fully supported.")
                 ps_ids = []

@@ -4,7 +4,7 @@ from AP2SHACL import (
     make_property_shape_name,
     list2RDFList,
     AP,
-    PropertyStatement,
+    StatementTemplate,
     ShapeInfo,
     read_shapeInfoDict,
     str2URIRef,
@@ -28,7 +28,7 @@ expected_ttl = []  # used for to test for prefixes and lists expected in graph
 
 @pytest.fixture(scope="module")
 def name_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("schema:name")
     ps.add_label("en", "Name")
@@ -61,7 +61,7 @@ def name_ps():
 
 @pytest.fixture(scope="module")
 def ageMax_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("schema:age")
     ps.add_label("en", "Age")
@@ -85,7 +85,7 @@ def ageMax_ps():
 
 @pytest.fixture(scope="module")
 def ageMin_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("schema:age")
     ps.add_label("en", "Age")
@@ -103,7 +103,7 @@ def ageMin_ps():
 
 
 def description_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("schema:description")
     ps.add_valueNodeType("literal")
@@ -129,7 +129,7 @@ def description_ps():
 
 @pytest.fixture(scope="module")
 def person_type_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("rdf:type")
     ps.add_label("en", "Type")
@@ -148,7 +148,7 @@ def person_type_ps():
 
 @pytest.fixture(scope="module")
 def contact_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("schema:email")
     ps.add_property("schema:address")
@@ -176,7 +176,7 @@ def contact_ps():
 
 @pytest.fixture(scope="module")
 def email_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("schema:email")
     ps.add_label("en", "Email")
@@ -203,7 +203,7 @@ def email_ps():
 
 @pytest.fixture(scope="module")
 def email_length_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("schema:email")
     ps.add_label("en", "Email Length")
@@ -229,7 +229,7 @@ def email_length_ps():
 
 @pytest.fixture(scope="module")
 def address_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Person")
     ps.add_property("schema:address")
     ps.add_label("en", "Address")
@@ -255,7 +255,7 @@ def address_ps():
 
 @pytest.fixture(scope="module")
 def address_type_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Address")
     ps.add_property("rdf:type")
     ps.add_label("en", "Type")
@@ -274,7 +274,7 @@ def address_type_ps():
 
 @pytest.fixture(scope="module")
 def address_option_ps():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     ps.add_shape("#Address")
     ps.add_property("schema:contactOption")
     ps.add_label("en", "Contact Option")
@@ -367,17 +367,17 @@ def simple_ap(
     ap.add_metadata("dct:title", "Test application profile")
     ap.add_metadata("dct:date", "2021-08-09")
     ap.add_shapeInfo("#Person", person_shapeInfo)
-    ap.add_propertyStatement(person_type_ps)
-    ap.add_propertyStatement(name_ps)
-    ap.add_propertyStatement(ageMax_ps)
-    ap.add_propertyStatement(ageMin_ps)
-    ap.add_propertyStatement(contact_ps)
-    ap.add_propertyStatement(email_ps)
-    ap.add_propertyStatement(email_length_ps)
-    ap.add_propertyStatement(address_ps)
+    ap.add_statementTemplate(person_type_ps)
+    ap.add_statementTemplate(name_ps)
+    ap.add_statementTemplate(ageMax_ps)
+    ap.add_statementTemplate(ageMin_ps)
+    ap.add_statementTemplate(contact_ps)
+    ap.add_statementTemplate(email_ps)
+    ap.add_statementTemplate(email_length_ps)
+    ap.add_statementTemplate(address_ps)
     ap.add_shapeInfo("#Address", address_shapeInfo)
-    ap.add_propertyStatement(address_type_ps)
-    ap.add_propertyStatement(address_option_ps)
+    ap.add_statementTemplate(address_type_ps)
+    ap.add_statementTemplate(address_option_ps)
     expected_ttl.extend(
         [
             "@base <http://example.org/shapes#> .",
@@ -417,7 +417,7 @@ def test_list2RDFList():
 
 
 def test_make_property_shape_name():
-    ps = PropertyStatement()
+    ps = StatementTemplate()
     name = make_property_shape_name(ps)
     assert type(name) == str
     ps.add_label("fr", "Coleur")
@@ -439,7 +439,7 @@ def test_ap2shaclInit(simple_ap):
     assert "dct" in converter.ap.namespaces.keys()
     assert "rdf" in converter.ap.namespaces.keys()
     assert "sh" in converter.ap.namespaces.keys()
-    assert len(converter.ap.propertyStatements) == 10
+    assert len(converter.ap.statementTemplates) == 10
     assert len(converter.ap.shapeInfo) == 2
     assert type(converter.sg) == Graph
 
