@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name="AP2SHACL",
-    version="0.4.0",
+    version="0.4.1",
     description="Application profile to SHACL exporter",
     author="Phil Barker",
     author_email="phil@pjjk.net",
