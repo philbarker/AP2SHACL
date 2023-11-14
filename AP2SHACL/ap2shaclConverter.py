@@ -216,7 +216,9 @@ class AP2SHACLConverter:
         # TODO: consider if alterntves in sh.or could be special cases like type
         for ps in self.ap.statementTemplates:
             if len(ps.properties) > 1:
-                print("# Warning: property template with multiple properties is not fully supported.")
+                print(
+                    "# Warning: property template with multiple properties is not fully supported."
+                )
                 ps_ids = []
                 severity = self.convert_severity(ps.severity)
                 for p in ps.properties:
@@ -240,14 +242,14 @@ class AP2SHACLConverter:
                     self.sg.add(
                         (str2URIRef(self.ap.namespaces, sh), SH.property, ps_opt_uri)
                     )
-            elif ps.properties == ["rdf:type"]:
-                # this is the way that TAP asserts objects must be of certain type, we can use sh:class instead
-                for shape in ps.shapes:
-                    shape_uri = str2URIRef(self.ap.namespaces, shape)
-                    for vc in ps.valueConstraints:
-                        type_uri = str2URIRef(self.ap.namespaces, vc)
-                        self.sg.add((shape_uri, SH_class, type_uri))
-                continue
+            #            elif ps.properties == ["rdf:type"]:
+            # this is the way that TAP asserts objects must be of certain type, we can use sh:class instead
+            #                for shape in ps.shapes:
+            #                    shape_uri = str2URIRef(self.ap.namespaces, shape)
+            #                    for vc in ps.valueConstraints:
+            #                        type_uri = str2URIRef(self.ap.namespaces, vc)
+            #                        self.sg.add((shape_uri, SH_class, type_uri))
+            #                continue
             else:
                 ps_name = make_property_shape_name(ps)
                 severity = self.convert_severity(ps.severity)
@@ -300,7 +302,7 @@ class AP2SHACLConverter:
         elif severity.lower() == "violation":
             return SH.Violation
         else:
-            msg = "severity not recognised: " + ps.severity
+            msg = "severity not recognised: " + severity
             raise Exception(msg)
 
     def convert_valueDataTypes(self, dataTypes):
