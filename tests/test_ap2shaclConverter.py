@@ -316,7 +316,7 @@ def person_shapeInfo():
     shapeInfo = ShapeInfo(
         label={"en": "Person shape"},
         comment={"en": "A shape for tests"},
-        targets={"class": "schema:Person"},
+        targets={"class": ["schema:Person"]},
         mandatory=True,
         severity="warning",
         closed=True,
@@ -340,7 +340,7 @@ def address_shapeInfo():
     shapeInfo = ShapeInfo(
         label={"en": "Address shape"},
         comment={"en": "A shape for tests"},
-        targets={"ObjectsOf": "schema:address", "class": "schema:PostalAddress"},
+        targets={"ObjectsOf": ["schema:address", "schema:location"], "class": ["schema:PostalAddress"]},
         mandatory=False,
         ignoreProps=[],
         severity="Warning",
@@ -351,6 +351,7 @@ def address_shapeInfo():
             (BASE.Address, SH.name, Literal("Address shape", lang="en")),
             (BASE.Address, SH.description, Literal("A shape for tests", lang="en")),
             (BASE.Address, SH.targetObjectsOf, SDO.address),
+            (BASE.Address, SH.targetObjectsOf, SDO.location)
         ]
     )
     return shapeInfo

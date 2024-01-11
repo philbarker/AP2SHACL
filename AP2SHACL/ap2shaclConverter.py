@@ -179,22 +179,7 @@ class AP2SHACLConverter:
                     comment = Literal(value, lang=key)
                     self.sg.add((shape_uri, SH.description, comment))
             if shapeInfo[shape].targets:
-                for key in shapeInfo[shape].targets.keys():
-                    t = shapeInfo[shape].targets[key]
-                    target = str2URIRef(self.ap.namespaces, t)
-                    if key.lower() == "class":
-                        targetType = SH.targetClass
-                    elif key.lower() == "node":
-                        targetType = SH.tagetNode
-                    elif key.lower() == "subjectsof":
-                        targetType = SH.targetSubjectsOf
-                    elif key.lower() == "objectsof":
-                        targetType = SH.targetObjectsOf
-                    else:
-                        print(shapeInfo[shape])
-                        msg = "targetType not recognised"
-                        raise ValueError(msg)
-                    self.sg.add((shape_uri, targetType, target))
+                self._covertTargets(shapeInfo[shape].targets, shape_uri)
             if shapeInfo[shape].closed == True:
                 self.sg.add(
                     (shape_uri, SH.closed, Literal("True", datatype=XSD.boolean))
@@ -209,6 +194,24 @@ class AP2SHACLConverter:
                     self.sg, properties, "CURIE", self.ap.namespaces
                 )
                 self.sg.add((shape_uri, SH.ignoredProperties, ignore_list))
+
+    def _covertTargets(self, targets, shape_uri):
+        for key in targets.keys():
+            for targetStr in targets[key]:
+                target = str2URIRef(self.ap.namespaces, targetStr)
+                if key.lower() == "class":
+                    targetType = SH.targetClass
+                elif key.lower() == "node":
+                    targetType = SH.tagetNode
+                elif key.lower() == "subjectsof":
+                    targetType = SH.targetSubjectsOf
+                elif key.lower() == "objectsof":
+                    targetType = SH.targetObjectsOf
+                else:
+                    print(targetStr)
+                    msg = "targetType not recognised"
+                    raise ValueError(msg)
+                self.sg.add((shape_uri, targetType, target))
 
     def convert_statementTemplates(self):
         """Add the property statements from the application profile to the SHACL graph as property shapes."""
