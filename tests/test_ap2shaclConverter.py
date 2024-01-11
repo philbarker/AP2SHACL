@@ -416,7 +416,7 @@ def test_list2RDFList():
     namespaces = {}
     start_node = list2RDFList(g, list, node_type, namespaces)
     g.add((SDO.name, SH_in, start_node))
-    expected_ttl = "<https://schema.org/name> ns1:in ( 1 2 3 )"
+    expected_ttl = "schema:name sh:in ( 1 2 3 )"
     assert expected_ttl in g.serialize(format="turtle")
     g = Graph()
     list = ["sdo:address", "sdo:email", "sdo:contactOption"]
@@ -424,13 +424,13 @@ def test_list2RDFList():
     namespaces = {"sdo": "https://schema.org/"}
     start_node = list2RDFList(g, list, node_type, namespaces)
     g.add((URIRef("#cont"), SH_or, start_node))
-    expected_ttl = "<#cont> ns1:or ( <https://schema.org/address> <https://schema.org/email> <https://schema.org/contactOption> )"
+    expected_ttl = "<#cont> sh:or ( schema:address schema:email schema:contactOption )"
     assert expected_ttl in g.serialize(format="turtle")
     list = [BNode(1), BNode(2), BNode(3)]
     node_type = "bnode"
     start_node = list2RDFList(g, list, node_type, {})
     g.add((URIRef("#blank"), SH_or, start_node))
-    expected_ttl = "<#blank> ns1:or ( [ ] [ ] [ ] )"
+    expected_ttl = "<#blank> sh:or ( [ ] [ ] [ ] )"
     assert expected_ttl in g.serialize(format="turtle")
 
 
