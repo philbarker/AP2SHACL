@@ -1,2 +1,0 @@
-rdflib >= 6.0.0
-https://github.com/philbarker/APClasses/archive/refs/tags/v1.0-alpha.1.zip
